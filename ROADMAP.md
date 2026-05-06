@@ -17,7 +17,7 @@ Items are ordered loosely by effort. None are committed; this is a personal lab.
 `test_retrieval.py` currently skips if `data/chroma_db/` doesn't exist. Building an in-memory ChromaDB fixture in `conftest.py` from the synthetic notes would let retrieval tests run in CI without a prior `make ingest` step.
 
 **Second embedding model A/B**
-The README describes swapping `OllamaEmbedding` for `HuggingFaceEmbedding` (BGE-M3) as a one-line change in `ingest.py`. Running `drift_compare.py` between the two embeddings — not just two LLMs — would demonstrate retrieval-quality drift detection, which is a separate concern from generation-quality drift.
+The README describes swapping `OllamaEmbedding` for `HuggingFaceEmbedding` (BGE-M3) as a one-line change in `ingest.py`. Running `drift_compare.py` between the two embeddings, not just two LLMs, would demonstrate retrieval-quality drift detection, which is a separate concern from generation-quality drift.
 
 ## Longer-term
 

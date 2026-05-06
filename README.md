@@ -1,8 +1,8 @@
-# onclab — local oncology RAG testbed
+# onclab, local oncology RAG testbed
 
 [![CI](https://github.com/weijia-89/oncology-rag-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/weijia-89/oncology-rag-lab/actions/workflows/ci.yml)
 
-A working RAG pipeline that extracts structured oncology entities (cancer type, AJCC stage, regimen, ECOG) from synthetic clinical notes. The focus is the testing infrastructure: eval suite, regression gate, drift detection, and observability — the same building blocks a production oncology pipeline needs.
+A working RAG pipeline that extracts structured oncology entities from synthetic clinical notes: cancer type, AJCC stage, regimen, ECOG. The pipeline itself isn't the interesting part. What's worth looking at is the testing infrastructure around it, because that's the part you'd actually need to trust before running something like this on real clinical data: DeepEval-driven eval, a regression gate that fails CI if the pass rate drops more than 5% versus baseline, A/B drift detection between model versions, and Arize Phoenix for observability. Same building blocks a production oncology pipeline needs, at the scale of a laptop and 8 synthetic notes.
 
 ## What's in the box
 
@@ -22,44 +22,44 @@ A working RAG pipeline that extracts structured oncology entities (cancer type, 
 ```bash
 # 1. Install Ollama (https://ollama.com), then start it.
 # 2. From this directory:
-scripts/bootstrap.sh         # uv sync + ollama pull qwen3:14b + nomic-embed-text
-make ingest                  # chunk + embed + index 8 synthetic notes
-make extract                 # see the structured outputs for each note
+scripts/bootstrap.sh # uv sync + ollama pull qwen3:14b + nomic-embed-text
+make ingest # chunk + embed + index 8 synthetic notes
+make extract # see the structured outputs for each note
 ```
 
 To run the eval suite end-to-end:
 
 ```bash
-make eval                    # DeepEval-driven tests with real Ollama calls (slow)
-make check-regression        # gate: did pass rate drop >5% vs baseline?
+make eval # DeepEval-driven tests with real Ollama calls (slow)
+make check-regression # gate: did pass rate drop >5% vs baseline?
 ```
 
 For unit tests with no Ollama dependency:
 
 ```bash
-make test-unit               # MOCK_LLM=1; runs in seconds; CI-friendly
+make test-unit # MOCK_LLM=1; runs in seconds; CI-friendly
 ```
 
 ## Read this in order
 
 For learning the layers, read the files in the order the data flows through them:
 
-1. `src/onclab/config.py` — every knob in one place
-2. `src/onclab/llm_client.py` — Ollama wrapper + MOCK_LLM toggle
-3. `src/onclab/ingest.py` — load → chunk → embed → store
-4. `src/onclab/rag.py` — retrieval + query engine
-5. `src/onclab/extract.py` — the actual oncology task
-6. `tests/eval/test_retrieval.py` — deterministic-layer tests
-7. `tests/eval/test_extraction_eval.py` — DeepEval scoring
-8. `scripts/drift_compare.py` — side-by-side model diff
+1. `src/onclab/config.py`: every knob in one place
+2. `src/onclab/llm_client.py`: Ollama wrapper + MOCK_LLM toggle
+3. `src/onclab/ingest.py`: load → chunk → embed → store
+4. `src/onclab/rag.py`: retrieval + query engine
+5. `src/onclab/extract.py`: the actual oncology task
+6. `tests/eval/test_retrieval.py`: deterministic-layer tests
+7. `tests/eval/test_extraction_eval.py`: DeepEval scoring
+8. `scripts/drift_compare.py`: side-by-side model diff
 
-Each file has a top-of-module comment covering the design decision and the rejected alternative.
+Each file has a top-of-module comment explaining the design decision and what was tried first.
 
 ## Hardware notes
 
-This was sized for an RTX 4070 Ti Super (16 GB VRAM) with 32 GB system RAM. Qwen3 14B Q4_K_M fits at ~8.7 GB and runs at ~30–40 tokens/sec. If you only have 8 GB VRAM, swap to llama3.1:8b in `.env`.
+Sized for an RTX 4070 Ti Super (16 GB VRAM) with 32 GB system RAM. Qwen3 14B Q4_K_M lands at around 8.7 GB and runs at roughly 30-40 tokens/sec on that card. If you've got 8 GB VRAM, swap to llama3.1:8b in `.env` and the eval suite will still pass.
 
-vLLM is intentionally not used. For single-user batch eval Ollama is easier to set up and gives comparable throughput; vLLM's advantage shows at concurrent-request scale this lab doesn't reach.
+vLLM is intentionally absent. For single-user batch eval, Ollama is faster to set up and gives you comparable throughput; vLLM's advantages show up at concurrent-request scale, which is not something a one-person eval harness ever reaches.
 
 ## Design questions worth thinking through
 
@@ -69,9 +69,9 @@ vLLM is intentionally not used. For single-user batch eval Ollama is easier to s
 
 ## Files you might add later
 
-- `data/synthetic_notes/patient_009.txt` and onward — `scripts/seed_data.py` shows the template pattern.
-- A second embedding model (BGE-M3) for retrieval quality A/B — `OllamaEmbedding` -> `HuggingFaceEmbedding`, one swap in `ingest.py`.
-- A custom GEval metric for clinical-plausibility scoring — DeepEval supports it; goes alongside `test_extraction_eval.py`.
+- `data/synthetic_notes/patient_009.txt` and onward: `scripts/seed_data.py` shows the template pattern.
+- A second embedding model (BGE-M3) for retrieval quality A/B: `OllamaEmbedding` -> `HuggingFaceEmbedding`, one swap in `ingest.py`.
+- A custom GEval metric for clinical-plausibility scoring: DeepEval supports it; goes alongside `test_extraction_eval.py`.
 
 ## License / Provenance
 
