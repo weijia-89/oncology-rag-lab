@@ -1,0 +1,55 @@
+# BUG CLASS: Dose Reduction / Treatment Modification
+# EMR MECHANISM: Chemotherapy dose modified due to toxicity. The original plan
+#   document (signed 3 months ago) still exists in the chart and references the
+#   standard dose. This follow-up note has the actual current dose. An extractor
+#   reading the original plan returns wrong dose.
+# EXTRACTION CHALLENGE:
+#   - What is the current active regimen? Modified FOLFOX at 65 mg/m2 oxaliplatin
+#   - Standard FOLFOX oxaliplatin dose is 85 mg/m2 — extractor should not return this
+#   - 5-FU and leucovorin are unchanged — partial dose reduction
+#   - Bevacizumab held this cycle (not part of long-term regimen change)
+# ──────────────────────────────────────────────────────────────────────────────
+
+PATIENT: MS. LINDA KOWALSKI      DOB: 1960-01-17      MRN: 00712895
+NOTE DATE: 2024-12-03     PROVIDER: Dr. Marcus Webb, MD
+NOTE TYPE: Chemotherapy follow-up — cycle 6, day 1
+
+REASON FOR VISIT: Cycle 6 day 1 of FOLFOX + bevacizumab. Evaluation prior to infusion.
+
+INTERVAL HISTORY:
+Ms. Kowalski has stage IV colorectal adenocarcinoma with hepatic metastases,
+KRAS wild-type. She completed cycles 1-4 at full standard doses. At cycle 5, she
+developed grade 2 peripheral sensory neuropathy — cold dysesthesias and digital
+paresthesias interfering with daily activities. Per our prior discussion and
+per NCCN guidelines for oxaliplatin-associated neuropathy, oxaliplatin dose
+was reduced to 65 mg/m2 (76% of standard 85 mg/m2) for cycle 5. 5-fluorouracil
+and leucovorin were continued at full doses. Bevacizumab was held cycle 5 due
+to a healing wound from a recent dental extraction (per protocol, held 28 days
+pre/post dental surgery).
+
+Today's visit: Neuropathy has improved to grade 1 since dose reduction. No cold
+sensitivity at rest. Fine motor tasks unaffected. Wound healed per dental surgeon.
+Bevacizumab can be restarted today.
+
+PHYSICAL EXAM:
+Weight 71 kg. BP 138/84. HR 68.
+Neuro: Intact light touch bilateral hands and feet. Mild hyporeflexia ankles.
+ECOG: 1.
+
+LABS: WBC 4.8, Hgb 10.9, Plt 201. Creatinine 0.9. Urine protein/creatinine ratio 0.18
+(below 0.5 — bevacizumab safe to restart). LFTs within normal limits. CEA 28 (down
+from 61 at start of treatment).
+
+ASSESSMENT: Stage IV colorectal adenocarcinoma, responding to treatment. Neuropathy
+improving on reduced oxaliplatin dosing. Appropriate to continue dose-reduced
+oxaliplatin; do not escalate back to 85 mg/m2.
+
+PLAN — CYCLE 6:
+Oxaliplatin 65 mg/m2 IV over 2 hours (DOSE REDUCED — do not use standard 85 mg/m2).
+Leucovorin 400 mg/m2 IV.
+5-Fluorouracil 400 mg/m2 IV bolus then 2400 mg/m2 IV over 46 hours.
+Bevacizumab 5 mg/kg IV (restarting after hold).
+Next cycle in 14 days. Re-evaluate neuropathy; if worsening back to grade 2,
+discontinue oxaliplatin and convert to 5-FU/leucovorin/bevacizumab maintenance.
+
+Electronically signed: M. Webb MD  2024-12-03 09:15

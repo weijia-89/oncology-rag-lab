@@ -1,0 +1,57 @@
+# BUG CLASS: SmartPhrase / Template Expansion Artifact
+# EMR MECHANISM: Epic SmartPhrase .onconewpt was inserted but provider did not
+#   complete all required fields before signing. Several [FIELD] tokens remain
+#   literal in the note. The auto-populated problem list header pulled a stale
+#   ICD-10 code from triage that was never updated.
+# EXTRACTION CHALLENGE: staging field is literally "[STAGE]" in the note body.
+#   Problem list says Stage II. Impression paragraph says metastatic. Three
+#   different signals, all inconsistent.
+# ──────────────────────────────────────────────────────────────────────────────
+
+PATIENT: MS. HELEN BAPTISTE      DOB: 1961-07-29      MRN: 00912034
+ENCOUNTER DATE: 2024-09-05       PROVIDER: Dr. Yolanda Osei, MD (Fellow)
+ENCOUNTER TYPE: New patient — hematology/oncology
+
+AUTO-POPULATED PROBLEM LIST (from registration):
+  1. Malignant neoplasm of sigmoid colon (C18.7) — Stage II — entered 2024-08-12
+
+──────────────────────────────────────────────────────────────────────────────
+
+CHIEF COMPLAINT: New diagnosis colorectal cancer, referred for oncology evaluation.
+
+HISTORY OF PRESENT ILLNESS:
+Ms. Baptiste is a 63-year-old woman referred by Dr. [REFERRING PHYSICIAN] following
+colonoscopy on 08/20/2024 revealing a sigmoid mass. Pathology confirmed moderately
+differentiated adenocarcinoma. CT chest/abdomen/pelvis performed [DATE OF IMAGING]
+showed [DESCRIBE FINDINGS HERE — LYMPH NODES / METS IF PRESENT]. She underwent
+surgical resection at [FACILITY] on [SURGICAL DATE] — details pending operative report.
+
+Molecular testing: [KRAS/NRAS/BRAF/MMR STATUS — ATTACH LAB WHEN AVAILABLE].
+MSI status: [FILL IN].
+CEA at diagnosis: [VALUE].
+
+PAST MEDICAL HISTORY: Hypertension. Type 2 diabetes, well-controlled. 
+
+MEDICATIONS: Metformin 500 mg BID. Amlodipine 5 mg daily. Aspirin 81 mg daily.
+
+ALLERGIES: Sulfa — rash.
+
+FAMILY HISTORY: Father with colon cancer, age 71. No HNPCC family history documented.
+
+PHYSICAL EXAM:
+General: Alert, no acute distress.
+Abdomen: Well-healed midline scar. Soft, nontender. No hepatomegaly appreciated.
+ECOG: [ECOG SCORE].
+
+ASSESSMENT:
+Colorectal adenocarcinoma. Stage [STAGE]. Molecular profile pending.
+This patient appears to have metastatic disease based on imaging findings discussed
+above, though full staging workup is not yet complete.
+
+PLAN:
+Will await molecular pathology. [CHEMOTHERAPY REGIMEN — PENDING STAGING AND MOLECULAR].
+Schedule multidisciplinary tumor board presentation [DATE TBD].
+Return to clinic in [TIMEFRAME].
+
+Electronically signed: Y. Osei MD  2024-09-05 17:51
+NOTE: This note was signed with unfilled template fields. Attending co-signature pending.

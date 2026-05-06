@@ -1,0 +1,47 @@
+# BUG CLASS: Copy-Forward Staleness
+# EMR MECHANISM: Provider opened prior visit note, clicked "Copy Forward," updated
+#   the HPI but forgot to update the Assessment/Plan. The plan still describes
+#   cycle 1 initiation. The current visit is cycle 9.
+# EXTRACTION CHALLENGE: regimen is correct (FOLFOX), but plan section will mislead
+#   an extractor anchored on the plan block. Stage IV is stated only in passing.
+# ──────────────────────────────────────────────────────────────────────────────
+
+PATIENT: MR. GERALD F.       DOB: 1958-03-11       MRN: 00847221
+VISIT DATE: 2024-11-14       PROVIDER: Dr. Anand Krishnamurthy, MD
+VISIT TYPE: Established outpatient — medical oncology follow-up
+
+REASON FOR VISIT:
+Mr. F. presents today for his cycle 9, day 1 infusion. He reports manageable fatigue
+and mild tingling in his fingertips bilaterally consistent with ongoing oxaliplatin
+neuropathy. No new complaints. Tolerating oral intake well. Bowel function normal.
+
+INTERVAL HISTORY:
+Restaging CT from 10/28/2024 shows stable hepatic lesions, no new sites of disease.
+CEA trended down from 44 to 31 over the last two cycles. Patient remains on full
+doses. Neuropathy has not worsened since last visit.
+
+MEDICATIONS: Ondansetron 8 mg PRN, lorazepam 0.5 mg PRN, metformin 1000 mg BID
+(held day of infusion), lisinopril 10 mg daily, atorvastatin 40 mg nightly.
+
+PHYSICAL EXAM:
+General: Well-appearing male in no acute distress.
+Vitals: BP 128/76, HR 72, Temp 98.4, Weight 81 kg (down 1 kg from last visit).
+Abdomen: Soft, mild right upper quadrant fullness, no rebound.
+Extremities: Intact sensation to monofilament bilateral feet. No edema.
+Performance status: ECOG 1.
+
+LABS (drawn this morning):
+WBC 5.2, Hgb 11.4, Plt 188. Creatinine 1.0. AST 38, ALT 44. CEA 31 ng/mL.
+
+ASSESSMENT:
+Stage IV colon adenocarcinoma, KRAS G12D mutant, with hepatic metastases.
+Currently stable on treatment. Neuropathy grade 1, monitoring closely.
+
+PLAN:
+Initiate FOLFOX chemotherapy: oxaliplatin 85 mg/m2 IV over 2 hours, leucovorin
+400 mg/m2 IV, 5-fluorouracil 400 mg/m2 IV bolus then 2400 mg/m2 over 46 hours
+continuous infusion. Bevacizumab 5 mg/kg IV. Anti-emetics per protocol.
+Follow up in 14 days for cycle 10. Repeat CEA at that visit.
+If neuropathy worsens to grade 2, reduce oxaliplatin to 65 mg/m2.
+
+Electronically signed: A. Krishnamurthy MD  2024-11-14 14:22

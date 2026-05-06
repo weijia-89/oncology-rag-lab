@@ -1,0 +1,8 @@
+{
+  "_comment": "Replaced on first real `make eval && make check-regression` run. The script seeds this file from current results when it doesn't exist, so don't hand-edit unless you want a specific floor.",
+  "summary": {
+    "passed": 0,
+    "failed": 0,
+    "total": 1
+  }
+}

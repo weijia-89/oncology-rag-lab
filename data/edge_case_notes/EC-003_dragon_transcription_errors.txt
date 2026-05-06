@@ -1,0 +1,48 @@
+# BUG CLASS: Speech Recognition / Transcription Errors
+# EMR MECHANISM: Note dictated via Dragon NaturallySpeaking, not reviewed before
+#   signing. Common Dragon errors: homophones, number-word confusion, drug name
+#   mishearing, staging word errors.
+# SPECIFIC ARTIFACTS IN THIS NOTE:
+#   "stage for" → "stage IV" (Dragon renders spoken "four" as "for" when
+#     sentence-medial without punctuation context)
+#   "FULL FOCKS" → FOLFOX (Dragon doesn't know this drug name abbreviation)
+#   "oxalaplatin" → oxaliplatin (common mishearing)
+#   "the patient's performance status is too" → ECOG 2
+#   "PD-L one" → PD-L1 (rendered correctly here but spacing varies)
+#   "ki sixty seven" → Ki-67 22%
+# EXTRACTION CHALLENGE: extractor must normalize garbled drug/staging strings.
+# ──────────────────────────────────────────────────────────────────────────────
+
+PATIENT: MR. THOMAS BEAULIEU     DOB: 1953-11-02     MRN: 00773618
+VISIT DATE: 2024-10-21     PROVIDER: Dr. Priya Menon, MD
+NOTE TYPE: New patient consultation — dictated via voice recognition
+
+HISTORY OF PRESENT ILLNESS:
+Mr. Beaulieu is a 70-year-old man presenting with newly diagnosed non-small cell
+lung cancer adenocarcinoma subtype. Imaging demonstrated a 3.8 centimeter right
+upper lobe mass with ipsilateral mediastinal adenopathy and a single left adrenal
+lesion measuring 1.4 centimeters. This is consistent with stage for non-small cell
+lung cancer. Biopsy via endobronchial ultrasound confirmed adenocarcinoma.
+Molecular profiling showed EGFR exon 19 deletion positive. PD-L one TPS is 15%.
+Ki sixty seven is approximately 28%.
+
+MEDICATIONS: Metoprolol succinate 50 mg daily. Omeprazole 20 mg daily.
+Amlodipine 5 mg daily. Aspirin 81 mg daily.
+
+ALLERGIES: Penicillin — anaphylaxis.
+
+PHYSICAL EXAM:
+General: Thin male, mild respiratory distress on ambulation.
+Lungs: Decreased breath sounds right base. No wheezing.
+The patient's performance status is too by my assessment.
+
+ASSESSMENT AND PLAN:
+Given EGFR exon 19 deletion, patient is a candidate for targeted therapy.
+Recommend osimertinib 80 mg orally daily as first-line therapy — this is preferred
+over FULL FOCKS based chemotherapy given actionable mutation. Will not initiate
+oxalaplatin-based regimens. Brain MRI ordered to complete staging — if brain mets
+present, osimertinib remains appropriate given CNS penetrance.
+
+Repeat labs in 2 weeks. Pulmonary function testing ordered.
+
+Electronically signed: P. Menon MD  2024-10-21 16:04

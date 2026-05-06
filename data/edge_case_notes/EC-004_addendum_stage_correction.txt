@@ -1,0 +1,55 @@
+# BUG CLASS: Addendum Contradiction — Stage Upward Revision
+# EMR MECHANISM: Original note signed at time of initial workup. Addendum added
+#   3 days later after additional imaging returned. The original note is the
+#   primary record body; the addendum is appended below it.
+#   An extractor reading only the note body returns Stage IIIA. Correct answer
+#   is Stage IVA (M1b — single brain met).
+# EXTRACTION CHALLENGE: stage in body ≠ stage in addendum. Addendum is authoritative.
+# ──────────────────────────────────────────────────────────────────────────────
+
+PATIENT: MS. DIANA OKAFOR       DOB: 1967-04-18      MRN: 00658843
+NOTE DATE: 2024-08-07     PROVIDER: Dr. Samuel Park, MD
+NOTE TYPE: New patient medical oncology consultation
+
+HISTORY OF PRESENT ILLNESS:
+Ms. Okafor is a 57-year-old never-smoker presenting with a persistent cough and
+hemoptysis. CT chest revealed a 4.4 cm left upper lobe mass with ipsilateral
+hilar and mediastinal lymphadenopathy. Mediastinoscopy with biopsy confirmed
+non-small cell lung carcinoma, squamous cell type. Bone scan negative.
+PET/CT demonstrated FDG-avid primary and mediastinal nodes only; no distant uptake.
+Brain MRI was ordered but not yet resulted at time of this note.
+
+STAGING (at time of note): Stage IIIA, T2bN2M0.
+ALK rearrangement: negative. EGFR: negative. PD-L1 TPS: 62%.
+
+PERFORMANCE STATUS: ECOG 1.
+
+ASSESSMENT AND PLAN:
+Definitive concurrent chemoradiation therapy recommended. Carboplatin AUC 2 weekly
+plus paclitaxel 50 mg/m2 weekly, concurrent with thoracic radiation 60 Gy in 30
+fractions. Followed by consolidation durvalumab for up to 12 months if no
+progression. Discussed goals, expected toxicities, and treatment timeline with patient.
+
+LABS: Hgb 12.8. Creatinine 0.8. LFTs normal.
+
+Electronically signed: S. Park MD  2024-08-07 15:30
+
+──────────────────────────────────────────────────────────────────────────────
+ADDENDUM — added by S. Park MD  2024-08-10 09:14
+──────────────────────────────────────────────────────────────────────────────
+
+Brain MRI resulted 08/09/2024. Single enhancing lesion 7mm right parietal lobe,
+appearance consistent with metastasis. Radiology read: "Single focus of enhancement
+right parietal lobe — in context of known primary lung malignancy, metastasis is
+the primary consideration. Cannot exclude alternative etiology."
+
+STAGING REVISION: Stage IVA, T2bN2M1b (single extrathoracic metastasis, CNS).
+
+This changes management. Concurrent chemoradiation as planned is no longer
+appropriate as definitive intent therapy. Discussed with patient 08/10/2024.
+Revised plan: osimertinib not applicable (EGFR negative). Recommend systemic
+chemotherapy + pembrolizumab (PD-L1 62%) per KEYNOTE-789 schema.
+Stereotactic radiosurgery to brain lesion to be coordinated with radiation oncology.
+Multidisciplinary tumor board scheduled 08/14/2024.
+
+End addendum.

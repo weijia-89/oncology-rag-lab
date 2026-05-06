@@ -1,0 +1,18 @@
+PATIENT ID: SYN-002
+NOTE DATE: 2025-04-22
+PROVIDER: Synthetic Provider B
+
+HISTORY OF PRESENT ILLNESS:
+57-year-old woman with abnormal screening mammogram. Core needle biopsy of right breast mass confirmed invasive ductal carcinoma.
+
+DIAGNOSIS:
+Stage IIB invasive ductal carcinoma of the right breast. T2N1M0 per AJCC 8th edition. ER 95% positive, PR 80% positive, HER2 1+ by IHC (negative). Ki-67 22%. Oncotype DX recurrence score 18.
+
+PERFORMANCE STATUS:
+ECOG 0.
+
+TREATMENT PLAN:
+Lumpectomy with sentinel lymph node biopsy completed 2025-04-10. Adjuvant whole-breast radiation therapy. Endocrine therapy with anastrozole 1 mg daily for 5 years. No indication for chemotherapy given recurrence score and clinical features.
+
+LABS:
+Hemoglobin 13.1 g/dL. Calcium 9.4 mg/dL. Alkaline phosphatase 78 U/L.

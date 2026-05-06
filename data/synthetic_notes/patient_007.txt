@@ -1,0 +1,18 @@
+PATIENT ID: SYN-007
+NOTE DATE: 2025-08-02
+PROVIDER: Synthetic Provider C
+
+HISTORY OF PRESENT ILLNESS:
+51-year-old man with new-onset jaundice and 15-pound weight loss. CT abdomen showed a 3.6 cm mass in the head of the pancreas with mass effect on the common bile duct. ERCP with biliary stent placement and brushings showed adenocarcinoma. Staging laparoscopy negative for peritoneal disease.
+
+DIAGNOSIS:
+Borderline-resectable pancreatic ductal adenocarcinoma. cT3N1M0 per AJCC 8th edition with abutment of the superior mesenteric vein. CA 19-9 elevated. Germline testing negative for BRCA1/2 and PALB2.
+
+PERFORMANCE STATUS:
+ECOG 1.
+
+TREATMENT PLAN:
+Neoadjuvant FOLFIRINOX (oxaliplatin 85 mg/m2, irinotecan 180 mg/m2, leucovorin 400 mg/m2, 5-fluorouracil 400 mg/m2 bolus then 2400 mg/m2 over 46 hours) every 14 days x 6 cycles. Restaging CT after cycle 4 to assess for resection candidacy. Discussion of pancreaticoduodenectomy if resectability is achieved.
+
+LABS:
+Total bilirubin 6.4 mg/dL (down from 11.2 pre-stent). CA 19-9 1840 U/mL. Albumin 3.0 g/dL. Hemoglobin 11.0 g/dL.

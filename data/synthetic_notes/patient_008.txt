@@ -1,0 +1,18 @@
+PATIENT ID: SYN-008
+NOTE DATE: 2025-09-15
+PROVIDER: Synthetic Provider E
+
+HISTORY OF PRESENT ILLNESS:
+38-year-old woman with progressive headaches and intermittent left-sided weakness. Brain MRI showed a 4.1 cm enhancing lesion in the right frontal lobe with surrounding edema. Awake craniotomy with maximal safe resection performed 2025-09-08.
+
+DIAGNOSIS:
+Glioblastoma, IDH-wildtype, WHO grade 4. MGMT promoter methylated. TERT promoter mutation present. EGFR amplification. CDKN2A/B homozygous deletion. Extent of resection: gross total per post-op MRI within 48 hours.
+
+PERFORMANCE STATUS:
+KPS 90 (ECOG 1).
+
+TREATMENT PLAN:
+Standard-of-care concurrent chemoradiation per Stupp protocol: 60 Gy in 30 fractions with daily temozolomide 75 mg/m2, followed by adjuvant temozolomide 150-200 mg/m2 days 1-5 every 28 days for 6 cycles. Consider tumor treating fields after chemoradiation. MRI surveillance every 2 months for the first year.
+
+LABS:
+Hemoglobin 13.4 g/dL. Platelets 248 K/uL. ANC 4.8 K/uL. AST 24 U/L. ALT 31 U/L.

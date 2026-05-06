@@ -1,0 +1,52 @@
+# BUG CLASS: Synchronous Dual Primary Malignancy
+# EMR MECHANISM: Two independent cancers identified on same workup. Each has
+#   its own staging, regimen, and expected trajectory. An extractor treating
+#   the note as single-cancer will either merge them (wrong) or miss one.
+# EXTRACTION CHALLENGE:
+#   - Two cancer types: breast (invasive ductal) and renal cell (clear cell)
+#   - Two staging values: Stage II (breast) and Stage I (RCC)
+#   - Treatment plan prioritizes breast cancer — no systemic therapy for RCC
+#   - Single ECOG applies to the patient
+#   - CEA is not relevant; CA 15-3 and no RCC-specific marker listed
+# ──────────────────────────────────────────────────────────────────────────────
+
+PATIENT: MS. PAULA ESTEVES      DOB: 1964-02-03      MRN: 00784422
+NOTE DATE: 2024-06-11     PROVIDER: Dr. Hassan Al-Rashidi, MD
+NOTE TYPE: New patient medical oncology — synchronous malignancy evaluation
+
+HISTORY:
+Ms. Esteves is a 60-year-old woman referred following two simultaneous findings.
+She underwent screening mammogram in April 2024 showing a 2.3 cm mass right breast,
+confirmed on biopsy as invasive ductal carcinoma, ER 90% positive, PR 75% positive,
+HER2 2+ by IHC, FISH negative (HER2 non-amplified). Oncotype DX recurrence score 24
+(intermediate range). Separately, abdominal CT obtained during her staging workup
+incidentally identified a 3.1 cm solid right renal mass. Renal biopsy confirmed
+clear cell renal cell carcinoma, grade 2 of 4. No distant metastases for either
+primary. Chest CT negative. Bone scan negative.
+
+BREAST CANCER STAGING: Stage IIA, T2N0M0. ER+/PR+/HER2-.
+RENAL CELL CARCINOMA STAGING: Stage I, T1bN0M0 (3.1 cm, organ-confined).
+
+PERFORMANCE STATUS: ECOG 0.
+
+MEDICATIONS: Levothyroxine 88 mcg daily. Atorvastatin 20 mg nightly.
+ALLERGIES: Codeine — nausea/vomiting.
+
+ASSESSMENT AND PLAN:
+Two independent primary malignancies confirmed. Discussing management priority:
+
+For breast cancer: Given intermediate Oncotype score, recommend neoadjuvant
+chemotherapy (docetaxel/cyclophosphamide x 4 cycles) followed by lumpectomy
+with sentinel node biopsy, adjuvant radiation, and 5 years of adjuvant endocrine
+therapy with anastrozole. Sequence breast treatment first.
+
+For renal cell carcinoma: Stage I, T1b — active surveillance vs nephron-sparing
+partial nephrectomy both acceptable. Given competing systemic treatment for breast,
+recommend urology consultation with plan for partial nephrectomy after breast
+systemic therapy completion, approximately 6 months from now, unless surveillance
+imaging shows growth. No systemic therapy indicated for Stage I RCC.
+
+Combined ECOG reflects overall functional status. No clinical trial available
+for synchronous dual primary at this institution.
+
+Electronically signed: H. Al-Rashidi MD  2024-06-11 14:02

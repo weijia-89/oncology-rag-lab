@@ -1,0 +1,38 @@
+# BUG CLASS: Unstructured Dictation — No Section Headers, Section Bleed
+# EMR MECHANISM: Provider dictated a narrative note without section headers.
+#   History, physical, assessment, and plan are interleaved in flowing prose.
+#   This is common in busy community oncology practices and older providers.
+# EXTRACTION CHALLENGE:
+#   - Cancer type and staging embedded in subordinate clause, not a label
+#   - ECOG stated as inference from functional description, not as a score
+#   - Regimen partially stated in past tense, partially implied for future
+#   - Barcelona Clinic Liver Cancer (BCLC) staging system, not AJCC/TNM
+# ──────────────────────────────────────────────────────────────────────────────
+
+PATIENT: MR. WINSTON ADEYEMI     DOB: 1951-03-09     MRN: 00483617
+NOTE DATE: 2024-09-27     PROVIDER: Dr. Robert Figueroa, MD
+NOTE TYPE: Office visit — established patient
+
+I saw Mr. Adeyemi today, a 73-year-old man who I have been following for his
+hepatocellular carcinoma, which we have been managing since his diagnosis in early
+2022. He is well-known to me. He came in with his daughter today who helps
+translate as his primary language is Yoruba. His AFP has come down nicely since
+we started sorafenib — it was 1,240 back in March and today it came back at 347,
+which I think represents a real response. He is by the Barcelona classification
+what we call stage C, intermediate to advanced, given his portal vein involvement
+that has been present since diagnosis. He has underlying Child-Pugh A cirrhosis
+from hepatitis B, which continues to be managed with tenofovir. His functional
+status remains good — he walks to the bus stop daily, cooks for himself, manages
+his own medications — I would say he is functioning at an ECOG level of 1. His
+last AFP before sorafenib was over twelve hundred, and his current labs today show
+bilirubin 1.3, albumin 3.5, creatinine 0.8, which keeps him Child-Pugh A. Platelets
+88 — he has chronic thrombocytopenia from portal hypertension, which we have been
+watching. I examined him today; he is thin but in no acute distress, his abdomen
+has the expected nodularity of cirrhotic liver at the right costal margin, no
+shifting dullness today. I want to continue sorafenib at the current dose of 400 mg
+twice daily and see him back in six weeks with repeat AFP and LFTs. If AFP
+continues to trend down and he stays well, we are in good shape. If there is any
+sign of hepatic decompensation or AFP rises again we will need to have a discussion
+about his goals and whether lenvatinib would be a better option at that point.
+
+Electronically signed: R. Figueroa MD  2024-09-27 15:50

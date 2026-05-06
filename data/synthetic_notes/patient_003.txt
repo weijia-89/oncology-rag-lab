@@ -1,0 +1,18 @@
+PATIENT ID: SYN-003
+NOTE DATE: 2025-02-11
+PROVIDER: Synthetic Provider C
+
+HISTORY OF PRESENT ILLNESS:
+72-year-old man with iron-deficiency anemia identified on routine bloodwork. Colonoscopy revealed a 5 cm fungating mass at the hepatic flexure. CT abdomen/pelvis showed three hepatic lesions, the largest 2.8 cm in segment 6.
+
+DIAGNOSIS:
+Stage IV colon adenocarcinoma with synchronous hepatic metastases. T3N1bM1a per AJCC 8th edition. KRAS G12D mutation. NRAS wild-type. BRAF wild-type. Microsatellite stable.
+
+PERFORMANCE STATUS:
+ECOG 1.
+
+TREATMENT PLAN:
+First-line FOLFOX (oxaliplatin 85 mg/m2, leucovorin 400 mg/m2, 5-fluorouracil 400 mg/m2 bolus then 2400 mg/m2 over 46 hours) plus bevacizumab 5 mg/kg every 14 days. Reassess for hepatic resection candidacy after 4 cycles.
+
+LABS:
+Hemoglobin 9.8 g/dL. CEA 88 ng/mL. Albumin 3.4 g/dL. Total bilirubin 0.8 mg/dL.

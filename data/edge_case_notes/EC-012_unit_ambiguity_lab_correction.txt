@@ -1,0 +1,80 @@
+# BUG CLASS: Unit Ambiguity + Lab Correction Notice
+# EMR MECHANISM: (1) Lab value transcribed without units in one field; (2) LIS
+#   (laboratory information system) issued a correction after note was signed —
+#   correction is appended as an amendment, not in the original note body.
+#   (3) SI vs US unit ambiguity for creatinine.
+# SPECIFIC ARTIFACTS:
+#   PSA: written as "14" in one paragraph, "14.2 ng/mL" elsewhere — minor
+#   Creatinine: "1.8" — ambiguous without units (could be mg/dL [abnormal] or
+#     a transcription of SI 159 μmol/L); context suggests mg/dL
+#   CA 19-9: original note says "184 U/mL" — lab correction says actual
+#     value was 1840 U/mL (10x error due to specimen dilution factor)
+# EXTRACTION CHALLENGE:
+#   - CA 19-9 = 1840 (corrected), not 184 (original)
+#   - PSA units should be inferred as ng/mL
+#   - Creatinine: extractor should flag ambiguity or resolve to mg/dL by context
+# ──────────────────────────────────────────────────────────────────────────────
+
+PATIENT: MR. HAROLD STENSTRÖM      DOB: 1950-04-22      MRN: 00288741
+NOTE DATE: 2024-07-09     PROVIDER: Dr. Fiona McLaughlin, MD
+NOTE TYPE: New patient consultation — genitourinary oncology
+
+HISTORY OF PRESENT ILLNESS:
+Mr. Stenström is a 74-year-old man referred for rising PSA and new pancreatic
+incidentaloma found on staging workup. He was diagnosed with prostate cancer
+three years ago — Gleason 3+4, cT2aN0M0, intermediate risk — and has been on
+active surveillance with PSA every 6 months. PSA at diagnosis was 6.8. Over the
+past year, PSA has risen: 8.1, 10.4, 14 (latest, drawn 07/02/2024). Separately,
+CT abdomen performed for PSA staging workup identified a 2.2 cm low-density
+pancreatic head mass. EUS-guided biopsy performed 06/28/2024 confirmed pancreatic
+ductal adenocarcinoma, moderately differentiated.
+
+STAGING (prostate): cT2aN0M0, Gleason 4+3 (Grade Group 3) — reclassified on
+recent biopsy; PSA 14.2 ng/mL. Bone scan negative. PSMA PET pending.
+
+STAGING (pancreas): cT2N0M0, borderline resectable per NCCN criteria. No distant
+metastases. CA 19-9 drawn 07/02/2024 — laboratory reported as 184 U/mL (NOTE:
+see lab correction amendment below). Bilirubin 1.1 mg/dL, no biliary obstruction.
+BRCA2 germline testing sent — pending.
+
+PERFORMANCE STATUS: ECOG 1. Alert, ambulatory, retired engineer.
+
+MEDICATIONS: Finasteride 5 mg daily. Atorvastatin 20 mg. Metformin 500 mg daily.
+ALLERGIES: Contrast dye — mild urticaria (premedicate with diphenhydramine/prednisone).
+
+CURRENT LABS:
+PSA 14 (units: ng/mL per ordering requisition). Creatinine 1.8. Hemoglobin 12.2.
+Total bilirubin 1.1 mg/dL. Albumin 3.6 g/dL. CA 19-9: 184 U/mL (see correction).
+
+ASSESSMENT AND PLAN:
+Two simultaneous primary malignancies: (1) prostate adenocarcinoma, Gleason 4+3,
+active surveillance no longer appropriate given PSA velocity — moving to definitive
+treatment; (2) pancreatic ductal adenocarcinoma, borderline resectable.
+Pancreatic cancer is the more immediately life-threatening diagnosis. Will prioritize
+neoadjuvant FOLFIRINOX for pancreatic primary, coordinate prostate management after.
+PSMA PET and BRCA2 results will guide both treatment paths.
+
+Electronically signed: F. McLaughlin MD  2024-07-09 15:12
+
+──────────────────────────────────────────────────────────────────────────────
+LAB CORRECTION NOTICE — issued by Regional Laboratory Services  2024-07-11 08:30
+Corrected by: Lab Supervisor (electronically verified)
+──────────────────────────────────────────────────────────────────────────────
+
+SPECIMEN: MRN 00288741 — DRAW DATE 2024-07-02 — ACCESSION CA191-20240702-4418
+TEST: CA 19-9 (Carbohydrate Antigen 19-9)
+
+ORIGINAL REPORTED VALUE: 184 U/mL
+CORRECTED VALUE: 1840 U/mL
+
+REASON FOR CORRECTION: Specimen was processed with an incorrect dilution factor
+(1:10 dilution applied in error; specimen was above the standard assay range).
+Manual re-analysis at appropriate dilution confirmed the corrected value of
+1840 U/mL. All downstream reports and clinical notes referencing the original
+value of 184 U/mL should be updated to reflect 1840 U/mL.
+
+This correction has been transmitted to the ordering provider and entered into
+the LIS. The EMR flowsheet value has been updated. Any printed notes referencing
+the original value retain the uncorrected number.
+
+End of lab correction notice.

@@ -1,0 +1,18 @@
+PATIENT ID: SYN-004
+NOTE DATE: 2025-05-30
+PROVIDER: Synthetic Provider A
+
+HISTORY OF PRESENT ILLNESS:
+68-year-old man with elevated PSA on annual screen (PSA 14.2 ng/mL, up from 6.1 a year prior). MRI prostate showed PI-RADS 5 lesion in the left peripheral zone. Targeted biopsy positive for adenocarcinoma in 6 of 12 cores.
+
+DIAGNOSIS:
+Prostate adenocarcinoma. Gleason 4+4 = 8. Grade Group 4. cT2cN0M0 per AJCC 8th edition. Bone scan and CT pelvis without evidence of metastasis. PSMA PET pending.
+
+PERFORMANCE STATUS:
+ECOG 0.
+
+TREATMENT PLAN:
+External beam radiation therapy 78 Gy in 39 fractions to the prostate and seminal vesicles, with concurrent and adjuvant androgen deprivation therapy (leuprolide 22.5 mg every 12 weeks) for 24 months total. Patient counseled on hot flashes, fatigue, and bone density monitoring.
+
+LABS:
+PSA 14.2 ng/mL. Testosterone 480 ng/dL. Hemoglobin 14.2 g/dL.

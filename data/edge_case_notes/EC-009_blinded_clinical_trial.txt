@@ -1,0 +1,48 @@
+# BUG CLASS: Blinded / Unknown Regimen (Clinical Trial)
+# EMR MECHANISM: Patient enrolled in double-blind RCT. Actual treatment assignment
+#   is blinded — neither provider nor patient knows if receiving experimental drug
+#   or placebo. Note correctly states this; extractor cannot determine regimen.
+# EXTRACTION CHALLENGE:
+#   - Regimen = NULL (blinded) — not "study drug," not "placebo"
+#   - Protocol number is present but does not tell you the drug
+#   - Background standard-of-care chemo IS named (FOLFIRI) and is deterministic
+#   - The investigational component is what's blinded
+# ──────────────────────────────────────────────────────────────────────────────
+
+PATIENT: MR. RAYMOND SOUZA       DOB: 1955-06-27      MRN: 00599341
+NOTE DATE: 2024-08-19     PROVIDER: Dr. Janet Yuen, MD
+NOTE TYPE: Clinical trial follow-up — cycle 4, week 8
+
+CLINICAL TRIAL: PROTOCOL CRCA-2022-047 (Phase III, randomized, double-blind,
+placebo-controlled). Sponsor: [BLINDED]. IND: [REDACTED PER PROTOCOL].
+Randomization date: 2024-04-30. Arm assignment: BLINDED.
+
+BACKGROUND: Mr. Souza has Stage IV colorectal adenocarcinoma, KRAS wild-type,
+MSI-stable. He has received 2 prior lines of therapy (FOLFOX x 8 cycles,
+then FOLFIRI x 4 cycles with progression). He was enrolled on CRCA-2022-047,
+which randomizes patients 1:1 to FOLFIRI + investigational agent vs FOLFIRI + placebo.
+
+CURRENT TREATMENT:
+FOLFIRI backbone (irinotecan 180 mg/m2 IV, leucovorin 400 mg/m2 IV, 5-FU
+400 mg/m2 bolus then 2400 mg/m2 over 46 hours, every 14 days) — confirmed,
+per open-label component of protocol.
+Study drug or placebo (blinded) per protocol schedule — cannot be disclosed per
+double-blind protocol. Unblinding will occur at pre-specified interim analysis
+or at end of study.
+
+INTERVAL HISTORY: Tolerating treatment. No significant adverse events. Grade 1
+diarrhea, managed with loperamide. No infusion reactions.
+
+PERFORMANCE STATUS: ECOG 1.
+
+RESTAGING CT (08/12/2024): Stable disease. No new lesions. Largest hepatic lesion
+unchanged at 3.4 cm.
+
+LABS: WBC 3.9, ANC 2.4, Hgb 10.5, Plt 175. CEA 88 (stable from 91).
+
+PLAN: Continue protocol per schedule. Cycle 5 day 1 in 14 days.
+Per protocol, dose modifications for toxicity follow the standard FOLFIRI table;
+study drug/placebo modifications per sponsor protocol SAE guidelines.
+Report any grade 3+ adverse events to sponsor within 24 hours.
+
+Electronically signed: J. Yuen MD  2024-08-19 11:05

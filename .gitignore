@@ -1,0 +1,22 @@
+# Python
+**/__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# uv / venv
+.venv/
+uv.lock
+
+# Project artifacts
+.env
+data/chroma_db/
+data/real_notes/
+eval_results*.json
+drift_report.csv
+phoenix_traces/
+
+# OS
+.DS_Store
+Thumbs.db

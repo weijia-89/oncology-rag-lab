@@ -1,0 +1,47 @@
+# BUG CLASS: Staging System Collision — FIGO vs TNM, old vs new edition
+# EMR MECHANISM: Gynecologic oncology note where provider uses both FIGO and
+#   TNM notation. FIGO staging revised in 2023 (ovarian) — note uses 2014 FIGO
+#   for one field and 2023 FIGO for another, which are not equivalent for Stage III.
+#   TNM and FIGO Stage IIIC do not map 1:1.
+# EXTRACTION CHALLENGE:
+#   - Two staging systems present, both real, not equivalent
+#   - FIGO 2014 vs FIGO 2023 differ for Stage III substage
+#   - Extractor must flag which system and which edition
+# ──────────────────────────────────────────────────────────────────────────────
+
+PATIENT: MS. RUTH NAKAMURA       DOB: 1959-09-14      MRN: 00521907
+NOTE DATE: 2024-07-22     PROVIDER: Dr. Christine Holloway, MD
+NOTE TYPE: Postoperative oncology consultation — gynecologic malignancy
+
+CLINICAL SUMMARY:
+Ms. Nakamura is a 64-year-old woman who underwent exploratory laparotomy,
+bilateral salpingo-oophorectomy, total abdominal hysterectomy, omentectomy, and
+pelvic/para-aortic lymphadenectomy on 07/15/2024 for a pelvic mass. Pathology
+confirmed high-grade serous ovarian carcinoma.
+
+STAGING:
+Surgical staging by FIGO criteria: Stage IIIC (FIGO 2014). Findings include
+omental cake (implants >2 cm) and positive retroperitoneal lymph nodes.
+
+The gynecologic pathologist's report uses the following notation:
+pT3c pN1 M0 (AJCC 8th edition, equivalent to FIGO 2014 Stage IIIC).
+
+Note for medical record: The updated FIGO 2023 ovarian cancer staging reclassifies
+some Stage IIIC cases — specifically, cases with only positive retroperitoneal lymph
+nodes (without peritoneal implants >2 cm) are now Stage IIIA2 under FIGO 2023.
+In this patient, omental implants >2 cm are confirmed, so staging remains IIIC
+under FIGO 2023 as well. Both editions concordant in this case.
+
+MOLECULAR PROFILE:
+BRCA1 germline: PATHOGENIC variant detected (c.5266dupC, p.Gln1756ProfsTer74).
+Somatic BRCA: no additional somatic mutations. HRD score: 42 (positive threshold >33).
+PD-L1: not routinely tested for ovarian.
+
+PERFORMANCE STATUS: ECOG 1. KPS 80.
+
+PLAN:
+Adjuvant carboplatin AUC 5 plus paclitaxel 175 mg/m2 every 21 days x 6 cycles,
+followed by maintenance olaparib 300 mg BID given BRCA1 germline pathogenic variant.
+Genetic counseling referral placed. Discuss PARP inhibitor sequencing after 6 cycles.
+
+Electronically signed: C. Holloway MD  2024-07-22 11:45

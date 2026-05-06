@@ -1,0 +1,51 @@
+patient_id,entity_type,gold_value,notes
+SYN-001,cancer_type,non-small cell lung cancer,Histology subtype is adenocarcinoma; primary site lung
+SYN-001,ajcc_stage,IIIA,T2bN2M0
+SYN-001,histology,adenocarcinoma,
+SYN-001,regimen,carboplatin + paclitaxel + durvalumab,Concurrent chemoRT then consolidation immunotherapy
+SYN-001,ecog,1,
+SYN-001,pdl1_tps,45,Percent
+SYN-002,cancer_type,breast cancer,Invasive ductal carcinoma right breast
+SYN-002,ajcc_stage,IIB,T2N1M0
+SYN-002,histology,invasive ductal carcinoma,
+SYN-002,regimen,anastrozole,Endocrine therapy 5 years; no chemo indicated
+SYN-002,ecog,0,
+SYN-002,er_status,positive,95% positive
+SYN-002,her2_status,negative,1+ by IHC
+SYN-003,cancer_type,colon cancer,Colon adenocarcinoma with hepatic metastases
+SYN-003,ajcc_stage,IV,T3N1bM1a
+SYN-003,histology,adenocarcinoma,
+SYN-003,regimen,FOLFOX + bevacizumab,
+SYN-003,ecog,1,
+SYN-003,kras_status,mutated,G12D
+SYN-003,msi_status,microsatellite stable,
+SYN-004,cancer_type,prostate cancer,
+SYN-004,ajcc_stage,IIC,cT2cN0M0 with Gleason 4+4 = Grade Group 4
+SYN-004,histology,adenocarcinoma,
+SYN-004,regimen,EBRT + leuprolide,78 Gy / 39 fx with 24 mo ADT
+SYN-004,ecog,0,
+SYN-004,gleason_score,4+4=8,Grade Group 4
+SYN-005,cancer_type,Hodgkin lymphoma,Classical, nodular sclerosis subtype
+SYN-005,ajcc_stage,IIIB,Lugano IIIB with B symptoms
+SYN-005,histology,classical Hodgkin lymphoma nodular sclerosis,
+SYN-005,regimen,ABVD,6 cycles
+SYN-005,ecog,1,
+SYN-005,b_symptoms,present,Fevers, night sweats, weight loss
+SYN-006,cancer_type,endometrial cancer,Endometrioid adenocarcinoma
+SYN-006,ajcc_stage,IB,FIGO 2009 IB / pT1bN0M0; FIGO 2023 = IA
+SYN-006,histology,endometrioid adenocarcinoma,Grade 2
+SYN-006,regimen,vaginal brachytherapy,21 Gy / 3 fx adjuvant; no chemo
+SYN-006,ecog,0,
+SYN-006,mmr_status,proficient,
+SYN-007,cancer_type,pancreatic cancer,Borderline resectable PDAC
+SYN-007,ajcc_stage,IIB,cT3N1M0
+SYN-007,histology,pancreatic ductal adenocarcinoma,
+SYN-007,regimen,FOLFIRINOX,Neoadjuvant 6 cycles before resection consideration
+SYN-007,ecog,1,
+SYN-007,brca_status,negative,Germline BRCA1/2/PALB2 negative
+SYN-008,cancer_type,glioblastoma,IDH-wildtype WHO grade 4
+SYN-008,ajcc_stage,N/A,Glioblastoma is not AJCC-staged; WHO grade 4 instead
+SYN-008,histology,glioblastoma IDH-wildtype,
+SYN-008,regimen,temozolomide + radiation,Stupp protocol; 60 Gy + concurrent then adjuvant TMZ
+SYN-008,ecog,1,KPS 90
+SYN-008,mgmt_status,methylated,

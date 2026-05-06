@@ -1,0 +1,53 @@
+# BUG CLASS: Negation Trap — Clinically Significant Negated and Hedged Entities
+# EMR MECHANISM: Normal clinical hedging that an NLP system may misread as
+#   affirmative. Classic NLP negation failure modes.
+# SPECIFIC TRAPS:
+#   "cannot exclude early peritoneal involvement" → should NOT be M1
+#   "new pulmonary nodule, not definitively metastatic" → should NOT upstage
+#   "EGFR mutation negative" → EGFR status = negative (correctly negated)
+#   "no evidence of bone metastases" → should NOT be bone mets
+#   "patient denies hemoptysis" → hemoptysis = absent
+#   "prior appendectomy — no malignancy at that time" → prior cancer = false
+# EXTRACTION CHALLENGE: distinguish true negations, uncertain hedges, and
+#   history-of-X-that-is-resolved from affirmative current findings.
+# ──────────────────────────────────────────────────────────────────────────────
+
+PATIENT: MR. KEVIN MARCHETTI      DOB: 1956-08-22      MRN: 00634917
+NOTE DATE: 2024-05-14     PROVIDER: Dr. Amina Diallo, MD
+NOTE TYPE: Follow-up — medical oncology, gastric cancer
+
+INTERVAL HISTORY:
+Mr. Marchetti is a 67-year-old man with known gastric adenocarcinoma who returns
+for surveillance. He denies new abdominal pain, hemoptysis, or unintentional
+weight loss. He underwent appendectomy in 1998 — pathology from that operation
+showed no malignancy at that time.
+
+STAGING SUMMARY (from initial workup, 01/2024):
+Gastric adenocarcinoma, HER2 negative, MSS. Staging CT demonstrated a T3N2 primary
+with no evidence of distant metastases on initial imaging. Stage IIIA, T3N2M0.
+Peritoneal cytology was negative on diagnostic laparoscopy.
+
+INTERVAL IMAGING (CT abdomen/pelvis, 05/08/2024):
+Primary site: stable. No new regional adenopathy. Liver: no definitive hepatic
+metastases identified. A new 6mm pulmonary nodule is noted in the right lower lobe,
+not definitively metastatic — Fleischner criteria recommend follow-up CT in 3 months
+given size. Cannot exclude early peritoneal involvement given trace ascites (new
+since last scan, small volume, etiology uncertain). Bone windows: no evidence of
+osseous metastatic disease.
+
+EGFR mutation: negative. PD-L1 CPS 4 (low positive). KRAS: wild-type.
+
+PERFORMANCE STATUS: ECOG 1.
+
+LABS: CEA 8.4 (up from 6.1 three months ago, trend noted). CA 72-4: 18 U/mL.
+
+ASSESSMENT:
+Stage IIIA gastric adenocarcinoma, currently on surveillance following curative-intent
+gastrectomy. Imaging without definitive progression. New pulmonary nodule indeterminate;
+trace ascites warrants monitoring. CEA trending up — significance uncertain.
+No definitive evidence of metastatic disease at this time.
+
+PLAN: Repeat CT in 3 months. Diagnostic paracentesis if ascites increases in volume.
+Continue surveillance. No new systemic therapy indicated at this time.
+
+Electronically signed: A. Diallo MD  2024-05-14 10:30

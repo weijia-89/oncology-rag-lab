@@ -1,0 +1,18 @@
+PATIENT ID: SYN-005
+NOTE DATE: 2025-06-18
+PROVIDER: Synthetic Provider D
+
+HISTORY OF PRESENT ILLNESS:
+44-year-old woman with palpable left-sided neck mass for 6 weeks. Excisional biopsy showed classical Hodgkin lymphoma, nodular sclerosis subtype. PET/CT revealed disease above and below the diaphragm including spleen.
+
+DIAGNOSIS:
+Classical Hodgkin lymphoma, nodular sclerosis subtype. Stage IIIB per Lugano classification (B symptoms: fevers, drenching night sweats, 8% weight loss). IPS score 3.
+
+PERFORMANCE STATUS:
+ECOG 1.
+
+TREATMENT PLAN:
+ABVD x 6 cycles (doxorubicin 25 mg/m2, bleomycin 10 units/m2, vinblastine 6 mg/m2, dacarbazine 375 mg/m2 days 1 and 15). Interim PET after 2 cycles to assess response and guide continuation versus escalation to BEACOPP. Pulmonary function testing prior to bleomycin.
+
+LABS:
+Hemoglobin 11.2 g/dL. ESR 62 mm/hr. LDH 312 U/L. Albumin 3.1 g/dL.

@@ -1,0 +1,69 @@
+# BUG CLASS: Stale ICD-10 Problem List Conflicts with Note Body
+# EMR MECHANISM: The problem list with ICD-10 code was set at original diagnosis
+#   (Stage II). Patient has since progressed. No one updated the problem list.
+#   The note body explicitly documents progression to Stage IV with hepatic mets.
+#   An extractor that reads the structured problem list header will return Stage II;
+#   the correct answer is Stage IV.
+# EXTRACTION CHALLENGE:
+#   - Structured header: C18.2 (ascending colon, Stage II — wrong)
+#   - Note body: "progression to metastatic disease," "hepatic metastases"
+#   - Correct stage is IV (and should supersede the stale header)
+# ──────────────────────────────────────────────────────────────────────────────
+
+PATIENT: MR. FELIX BERGMANN      DOB: 1949-11-05      MRN: 00327654
+NOTE DATE: 2024-10-08     PROVIDER: Dr. Sunita Rao, MD
+NOTE TYPE: New patient consult — referred from outside oncologist
+
+AUTO-GENERATED NOTE HEADER (from active problem list — not reviewed by provider):
+  ACTIVE DIAGNOSES:
+  • Malignant neoplasm of ascending colon (C18.2) — Stage II, last updated 2022-03-14
+  • Hypertension (I10)
+  • Type 2 diabetes mellitus without complications (E11.9)
+  • Hyperlipidemia (E78.5)
+
+──────────────────────────────────────────────────────────────────────────────
+
+REASON FOR REFERRAL: Newly identified hepatic lesions, reassessment of management.
+
+HISTORY OF PRESENT ILLNESS:
+Mr. Bergmann is a 74-year-old man who was treated for Stage II ascending colon
+adenocarcinoma in 2022 with right hemicolectomy — pathology pT3N0M0. He received
+no adjuvant chemotherapy given Stage II disease, pMMR (mismatch repair proficient),
+and absence of high-risk features at that time. He was on surveillance colonoscopy
+and imaging protocol.
+
+He presents today after routine surveillance CT abdomen/pelvis (2024-09-25) showed
+four new hepatic lesions: 2.4 cm (segment VI), 1.8 cm (segment V), 1.1 cm
+(segment IVA), and 0.8 cm (segment III). CT-guided liver biopsy performed
+2024-10-02 confirmed metastatic colon adenocarcinoma consistent with the known
+primary. CEA drawn at outside facility: 142 ng/mL (was 2.1 at last surveillance visit
+in 04/2024). This represents recurrence with progression to metastatic disease.
+
+Molecular testing of liver biopsy: KRAS G12C mutation. NRAS wild-type. BRAF V600E
+negative. MSS (mismatch repair proficient). HER2 amplification: negative.
+
+CURRENT STAGING: Stage IV, T3N0M1b (metachronous hepatic metastases, disease-free
+interval approximately 2.5 years from original resection).
+
+PERFORMANCE STATUS: ECOG 1. Patient is ambulatory, working part-time, manages ADLs
+independently.
+
+MEDICATIONS: Metformin 1000 mg BID. Lisinopril 20 mg daily. Atorvastatin 40 mg.
+Aspirin 81 mg (will discuss holding for chemo).
+
+ALLERGIES: Sulfa drugs — rash. NSAIDs — GI intolerance.
+
+ASSESSMENT AND PLAN:
+Stage IV colon adenocarcinoma, KRAS G12C mutant, MSS, metachronous hepatic recurrence.
+
+KRAS G12C is an actionable mutation — adagrasib or soterasib combinations are in
+late-phase trials for colorectal; however, no approved targeted agent available
+as first-line per current guidelines. First-line systemic therapy: FOLFIRI plus
+bevacizumab (FOLFOX contraindicated given prior oxaliplatin exposure — patient
+received FOLFOX as part of a short trial prior to stopping; confirmed with
+outside oncologist). Assess for hepatic resection candidacy after 4-6 cycles
+of systemic therapy — hepatic surgery consultation placed.
+
+Return to clinic in 14 days for cycle 1 day 1.
+
+Electronically signed: S. Rao MD  2024-10-08 16:45

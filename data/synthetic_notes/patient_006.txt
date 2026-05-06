@@ -1,0 +1,18 @@
+PATIENT ID: SYN-006
+NOTE DATE: 2025-07-09
+PROVIDER: Synthetic Provider B
+
+HISTORY OF PRESENT ILLNESS:
+59-year-old woman with postmenopausal bleeding. Endometrial biopsy showed grade 2 endometrioid adenocarcinoma. Pelvic MRI showed myometrial invasion greater than 50%.
+
+DIAGNOSIS:
+Endometrial adenocarcinoma, endometrioid type, grade 2. Stage IB per FIGO 2009 (IA per FIGO 2023). pT1bN0M0 per AJCC 8th edition. Mismatch repair proficient. POLE wild-type. p53 wild-type.
+
+PERFORMANCE STATUS:
+ECOG 0.
+
+TREATMENT PLAN:
+Total laparoscopic hysterectomy with bilateral salpingo-oophorectomy and pelvic lymphadenectomy completed 2025-06-25. Adjuvant vaginal cuff brachytherapy 21 Gy in 3 fractions. No indication for systemic chemotherapy given molecular profile and stage.
+
+LABS:
+Hemoglobin 12.8 g/dL. CA-125 22 U/mL. Glucose 102 mg/dL.

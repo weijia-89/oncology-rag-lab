@@ -1,0 +1,18 @@
+PATIENT ID: SYN-001
+NOTE DATE: 2025-03-14
+PROVIDER: Synthetic Provider A
+
+HISTORY OF PRESENT ILLNESS:
+Patient is a 64-year-old former smoker (40 pack-year history) presenting with persistent cough and a 12-pound weight loss over the past 3 months. Imaging revealed a 4.2 cm mass in the right upper lobe with mediastinal lymphadenopathy.
+
+DIAGNOSIS:
+Stage IIIA non-small cell lung cancer, adenocarcinoma subtype. Tumor staging: T2bN2M0 per AJCC 8th edition. EGFR mutation negative. ALK rearrangement negative. PD-L1 TPS 45%.
+
+PERFORMANCE STATUS:
+ECOG 1.
+
+TREATMENT PLAN:
+Concurrent chemoradiation with weekly carboplatin AUC 2 plus paclitaxel 50 mg/m2, followed by consolidation durvalumab 1500 mg every 4 weeks for up to 12 months.
+
+LABS:
+Hemoglobin 12.4 g/dL. Creatinine 0.9 mg/dL. ALT 28 U/L. AST 22 U/L.
