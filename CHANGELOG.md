@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.2] - 2026-05-06
+
+### Fixed
+
+- **`response["response"]` and `response["message"]["content"]` dict access broken on modern ollama-python.** Found this during an adversarial review of the Ollama client contract. The `generate()` return type changed from a plain dict to a response object somewhere around ollama-python 0.2; the dict key still evaluates without error because the object implements `__getitem__` via some internal shim, but it will silently return wrong data on certain builds. Switched both callsites (`llm_client.py:148` and `llm_client.py:162`) to attribute access (`response.response.strip()` and `response.message.content.strip()`), which is what the official SDK docs show and what all the example code in the ollama-python README uses. The dict form works today. It won't always.
+
+- **SSRF guard passed public routable IPs silently.** This one was subtle. `validate_service_url()` in `config.py` correctly blocked cloud-metadata CIDRs (169.254.0.0/16, etc.) and then `continue`-d through loopback and RFC-1918. But the loop had no `else` or trailing `raise`, so a public IP like `93.184.216.34` just fell off the end and returned `url` unchanged. Added an explicit `raise ValueError(...)` for anything that reaches the bottom of the loop, which is everything that isn't loopback, private, or already-blocked. The original intent was clearly to allow only local/LAN services; the guard was just missing the last case.
+
 ## [0.1.1] - 2026-05-06
 
 ### Fixed

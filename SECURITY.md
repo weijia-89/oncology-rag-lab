@@ -6,15 +6,15 @@ Use GitHub Security Advisories to report vulnerabilities privately:
 
 **https://github.com/weijia-89/oncology-rag-lab/security/advisories/new**
 
-Please include: what you found, steps to reproduce, and what impact you believe it has. You will get a response within a few days.
+Please include: what you found, steps to reproduce, and what impact you believe it has. You'll get a response within a few days.
 
 ---
 
 ## Threat model
 
-This is a local developer tool. It has no inbound network surface and no server component. The expected runtime is a single developer machine with Ollama running on localhost.
+This is a local developer tool. It has no inbound network surface and no server component, which means the expected runtime is a single developer machine with Ollama running on localhost. That's the whole attack surface.
 
-**What this tool is not:** It is not a web service, API, or multi-user system. It does not store credentials, handle authentication, or process real patient data.
+**What this tool is not:** It's not a web service, API, or multi-user system. It doesn't store credentials, handle authentication, or process real patient data.
 
 ### Attack surface in scope
 
@@ -33,7 +33,7 @@ This is a local developer tool. It has no inbound network surface and no server 
 
 ### Prompt injection note
 
-`extract.py` concatenates note text into prompts with structural delimiters (`--- CLINICAL NOTE ---` / `--- END NOTE ---`) but does not sanitize the content. All committed notes in `data/synthetic_notes/` and `data/edge_case_notes/` are invented and safe. The file-path comment in `extract.py` describes what a production hardening pass would add (input sanitization, closed-vocabulary output validation, adversarial test cases in the eval suite).
+`extract.py` concatenates note text into prompts with structural delimiters (`--- CLINICAL NOTE ---` / `--- END NOTE ---`) but doesn't sanitize the content. All committed notes in `data/synthetic_notes/` and `data/edge_case_notes/` are invented and safe. The file-path comment in `extract.py` describes what a production hardening pass would add: input sanitization, closed-vocabulary output validation, and adversarial test cases in the eval suite. Those aren't present yet.
 
 ---
 
@@ -53,6 +53,6 @@ No HIPAA-covered data has ever been committed to this repository. The `.gitignor
 
 ## Dependency notes
 
-Runtime dependencies (see `pyproject.toml`) include `arize-phoenix` and `openinference-instrumentation-llama-index`. Phoenix tracing is opt-in (`--trace` flag) and connects only to `http://localhost:6006` by default. No data leaves the local machine unless the user overrides `PHOENIX_COLLECTOR_ENDPOINT` to point at a remote collector.
+Runtime dependencies (see `pyproject.toml`) include `arize-phoenix` and `openinference-instrumentation-llama-index`. Phoenix tracing is opt-in via the `--trace` flag and connects only to `http://localhost:6006` by default, so no data leaves the local machine unless the user overrides `PHOENIX_COLLECTOR_ENDPOINT` to point at a remote collector. That override is on the user; the default is safe.
 
 Ollama communicates only with `OLLAMA_HOST` (default `http://localhost:11434`). No cloud LLM endpoints are used.

@@ -145,7 +145,7 @@ class OllamaClient:
         for attempt in range(_max_retries):
             try:
                 response = self._client.generate(model=self._model, prompt=prompt, options=opts)
-                return response["response"].strip()
+                return response.response.strip()
             except Exception as exc:  # noqa: BLE001
                 last_exc = exc
                 if attempt < _max_retries - 1:
@@ -159,4 +159,4 @@ class OllamaClient:
         if MOCK_LLM:
             return MOCK_RESPONSES.get(mock_key or "default", MOCK_RESPONSES["default"])
         response = self._client.chat(model=self._model, messages=messages)
-        return response["message"]["content"].strip()
+        return response.message.content.strip()

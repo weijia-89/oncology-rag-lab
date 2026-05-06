@@ -92,6 +92,15 @@ def validate_service_url(url: str, var_name: str) -> str:
         if ip.is_loopback or ip.is_private:
             continue
 
+        # Anything that reaches here is a public routable IP. The pipeline
+        # only talks to local or LAN services; a public IP in OLLAMA_HOST or
+        # CHROMA_HOST is either a misconfiguration or an SSRF attempt.
+        raise ValueError(
+            f"{var_name}={url!r} resolves to a public routable IP ({ip}). "
+            "Only localhost and RFC-1918 addresses are permitted for pipeline "
+            "services. Check OLLAMA_HOST / CHROMA_HOST in your .env."
+        )
+
     return url
 
 

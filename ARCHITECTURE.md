@@ -53,11 +53,11 @@ data/synthetic_notes/*.txt
 | LLM (generation + extraction) | `qwen3:14b` via Ollama | `ONCLAB_LLM_MODEL` env var |
 | Embedding | `nomic-embed-text` via Ollama | `ONCLAB_EMBED_MODEL` env var |
 
-Both models are pulled locally. No external API calls are made. `OLLAMA_HOST` defaults to `http://localhost:11434`.
+Both models are pulled locally. No exceptions. No external API calls are made anywhere in the codebase, `OLLAMA_HOST` defaults to `http://localhost:11434`, and `validate_service_url()` in `config.py` rejects anything that resolves to a public IP so a misconfigured env var can't silently route traffic to an external server.
 
 ## Configuration surface
 
-All knobs live in `config.py`. Runtime values come from environment variables; the `.env.example` file lists them.
+All knobs live in `config.py`. Runtime values come from environment variables, and the `.env.example` file lists them all.
 
 | Env var | Default | Purpose |
 |---|---|---|
@@ -67,7 +67,7 @@ All knobs live in `config.py`. Runtime values come from environment variables; t
 | `MOCK_LLM` | `0` | Set to `1` to use canned responses (CI, unit tests) |
 | `PHOENIX_PROJECT_NAME` | `oncology-rag-lab` | Arize Phoenix project label |
 
-Retrieval knobs (`chunk_size`, `chunk_overlap`, `top_k`) and eval thresholds (`hallucination_threshold`, `faithfulness_threshold`, `answer_relevancy_threshold`) have hard-coded defaults in `Settings` but can be overridden by constructing a custom `Settings` instance directly.
+Retrieval knobs (`chunk_size`, `chunk_overlap`, `top_k`) and eval thresholds (`hallucination_threshold`, `faithfulness_threshold`, `answer_relevancy_threshold`) have hard-coded defaults in `Settings`, but they can be overridden by constructing a custom `Settings` instance directly if you need non-default behavior in a specific test scenario.
 
 ## Eval harness
 
@@ -76,17 +76,17 @@ Tests live in two directories:
 - `tests/unit/`: no Ollama dependency; run under `MOCK_LLM=1`. Cover chunking behavior, extraction parsing, and the LLM client mock contract. These run in CI on every push.
 - `tests/eval/`: require Ollama (or `MOCK_LLM=1`). Marked `eval` so `pytest -m "not eval"` skips them. Include `test_retrieval.py` (classical chunk-content assertions against the live ChromaDB index) and `test_extraction_eval.py` (DeepEval `AnswerRelevancyMetric` as a pytest gate).
 
-The `eval` marker split means CI stays fast; the full DeepEval suite runs locally or in a nightly job.
+The `eval` marker split means CI stays fast; the full DeepEval suite runs locally or in a nightly job. That's intentional. If the CI job ran the DeepEval suite, it would need Ollama, which would need a GPU, which would make CI slower and more expensive for a suite that doesn't need to run on every push.
 
 `scripts/check_regression.py` reads `eval_results.json` (written by `pytest --json-report`) and compares the pass rate against `eval_baseline.json` (committed). Exit code 1 if the drop exceeds `--max-drop` (default 5%).
 
 ## Drift detection
 
-`scripts/drift_compare.py` runs the same extraction pass against two Ollama model names and writes `drift_report.csv` with per-`(patient_id, entity_type)` agreement. It uses `dataclasses.replace` on the frozen `Settings` to swap models without touching env vars or global state. Agreement is case-insensitive.
+`scripts/drift_compare.py` runs the same extraction pass against two Ollama model names and writes `drift_report.csv` with per-`(patient_id, entity_type)` agreement. It uses `dataclasses.replace` on the frozen `Settings` to swap models without touching env vars or global state, which keeps the comparison clean because you're not relying on side effects from the environment. Agreement is case-insensitive.
 
 ## Observability
 
-Arize Phoenix (`arize-phoenix`, `openinference-instrumentation-llama-index`) traces every retrieval and generation call. The tracer publishes spans to `http://localhost:6006` (configurable via `PHOENIX_COLLECTOR_ENDPOINT`). The UI is started separately (`make phoenix`); the instrumentor connects to whatever endpoint is reachable. Phoenix tracing is opt-in per CLI invocation (`--trace`).
+Arize Phoenix (`arize-phoenix`, `openinference-instrumentation-llama-index`) traces every retrieval and generation call. The tracer publishes spans to `http://localhost:6006` (configurable via `PHOENIX_COLLECTOR_ENDPOINT`). Start the UI separately (`make phoenix`); the instrumentor connects to whatever endpoint is reachable. Phoenix tracing is opt-in per CLI invocation via `--trace`.
 
 ## Build and CI
 
