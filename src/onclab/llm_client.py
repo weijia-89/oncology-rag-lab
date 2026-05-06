@@ -30,6 +30,7 @@ import csv
 import hashlib
 import json
 import os
+import time
 from pathlib import Path
 from typing import Any
 
@@ -132,9 +133,26 @@ class OllamaClient:
                 return MOCK_RESPONSES[mock_key]
             return MOCK_RESPONSES["default"]
 
-        # Real call.
-        response = self._client.generate(model=self._model, prompt=prompt, options=opts)
-        return response["response"].strip()
+        # Real call — up to 3 attempts with 2-second backoff.
+        # Ollama can drop connections mid-model-load or under heavy load;
+        # a single timeout aborting the whole extraction run is a bad outcome
+        # for a 400-second pipeline that's 90% done. Three tries with short
+        # sleeps handles the "Ollama restarted mid-eval" case without masking
+        # genuine model failures (the exception re-raises on the final attempt).
+        _max_retries = 3
+        _backoff_seconds = 2
+        last_exc: Exception | None = None
+        for attempt in range(_max_retries):
+            try:
+                response = self._client.generate(model=self._model, prompt=prompt, options=opts)
+                return response["response"].strip()
+            except Exception as exc:  # noqa: BLE001
+                last_exc = exc
+                if attempt < _max_retries - 1:
+                    time.sleep(_backoff_seconds)
+        raise RuntimeError(
+            f"Ollama generate failed after {_max_retries} attempts on model {self._model!r}."
+        ) from last_exc
 
     def chat(self, messages: list[dict[str, str]], *, mock_key: str | None = None) -> str:
         """Multi-turn variant. Same MOCK_LLM contract as generate()."""

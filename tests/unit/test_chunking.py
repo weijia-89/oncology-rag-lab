@@ -9,6 +9,9 @@ default in config.py but forgot to plumb it through to ingest.py".
 
 from __future__ import annotations
 
+import pytest
+
+pytest.importorskip("llama_index", reason="llama_index not installed")
 from llama_index.core.node_parser import SentenceSplitter
 
 

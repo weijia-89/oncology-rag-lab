@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/weijia-89/oncology-rag-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/weijia-89/oncology-rag-lab/actions/workflows/ci.yml)
 
-A working RAG pipeline that pulls structured oncology entities (cancer type, AJCC stage, regimen, ECOG, ...) out of synthetic clinical notes. The point is not the entities; the point is the testing infrastructure around them. Same patterns production oncology pipelines use at 150M-document scale, on a single machine.
+A working RAG pipeline that extracts structured oncology entities (cancer type, AJCC stage, regimen, ECOG) from synthetic clinical notes. The focus is the testing infrastructure: eval suite, regression gate, drift detection, and observability — the same building blocks a production oncology pipeline needs.
 
 ## What's in the box
 
@@ -53,13 +53,13 @@ For learning the layers, read the files in the order the data flows through them
 7. `tests/eval/test_extraction_eval.py` — DeepEval scoring
 8. `scripts/drift_compare.py` — side-by-side model diff
 
-Every file has comments at the top explaining the design decision and what the alternative looked like.
+Each file has a top-of-module comment covering the design decision and the rejected alternative.
 
 ## Hardware notes
 
 This was sized for an RTX 4070 Ti Super (16 GB VRAM) with 32 GB system RAM. Qwen3 14B Q4_K_M fits at ~8.7 GB and runs at ~30–40 tokens/sec. If you only have 8 GB VRAM, swap to llama3.1:8b in `.env`.
 
-vLLM is intentionally not used. Ollama is faster to set up, restarts cleanly on driver updates, and has no meaningful throughput advantage for single-user batch eval at this scale.
+vLLM is intentionally not used. For single-user batch eval Ollama is easier to set up and gives comparable throughput; vLLM's advantage shows at concurrent-request scale this lab doesn't reach.
 
 ## Design questions worth thinking through
 
@@ -75,4 +75,4 @@ vLLM is intentionally not used. Ollama is faster to set up, restarts cleanly on 
 
 ## License / Provenance
 
-All clinical content in `data/synthetic_notes/` is invented. No PHI. No real patient ever passed through this code.
+All clinical content in `data/synthetic_notes/` is invented. No PHI. `data/real_notes/` is git-ignored and never committed.

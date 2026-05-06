@@ -23,6 +23,9 @@ jobs:
       - name: Install dependencies
         run: uv sync --all-groups
 
+      - name: Lint
+        run: uv run ruff check src/ tests/
+
       - name: Run unit tests
         # Excludes `eval` and `drift` markers — those require a running Ollama
         # instance and are not suitable for CI. Run them locally: make eval

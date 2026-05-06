@@ -20,3 +20,6 @@ phoenix_traces/
 # OS
 .DS_Store
 Thumbs.db
+
+# Internal dev artifacts — not for public repo
+health_report.md

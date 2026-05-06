@@ -15,9 +15,84 @@ Why pydantic-settings (or in this case, a plain dataclass with os.environ):
 
 from __future__ import annotations
 
+import ipaddress
 import os
+import socket
 from dataclasses import dataclass
 from pathlib import Path
+from urllib.parse import urlparse
+
+# ---------------------------------------------------------------------------
+# URL / SSRF validation
+# ---------------------------------------------------------------------------
+# Cloud-metadata addresses that must never be contacted from an LLM pipeline.
+# These are IANA-reserved or well-known metadata ranges; connecting to them
+# from an application is almost always a sign of an SSRF attack.
+_BLOCKED_NETWORKS: list[ipaddress.IPv4Network | ipaddress.IPv6Network] = [
+    ipaddress.ip_network("169.254.0.0/16"),  # link-local / AWS/GCP/Azure IMDS
+    ipaddress.ip_network("100.64.0.0/10"),   # shared address space (carrier-grade NAT)
+]
+
+
+def validate_service_url(url: str, var_name: str) -> str:
+    """Validate a service URL before it touches the network.
+
+    Rules:
+    - Scheme must be http or https.
+    - Hostname resolves and is not in a cloud-metadata range.
+    - Loopback (127.x, ::1) and RFC-1918 addresses are always allowed —
+      Ollama running on localhost is the expected happy path.
+
+    Raises ValueError if the URL is invalid or blocked.
+    Returns the url unchanged if it passes.
+    """
+    if not url:
+        raise ValueError(f"{var_name} must not be empty.")
+
+    parsed = urlparse(url)
+    if parsed.scheme not in ("http", "https"):
+        raise ValueError(
+            f"{var_name}={url!r} uses scheme {parsed.scheme!r}; only http/https are allowed."
+        )
+
+    hostname = parsed.hostname
+    if not hostname:
+        raise ValueError(f"{var_name}={url!r} has no resolvable hostname.")
+
+    # Resolve to an IP. socket.getaddrinfo handles both IPv4 and IPv6 and
+    # also covers hostnames like "localhost" that are not raw IPs.
+    try:
+        results = socket.getaddrinfo(hostname, None, socket.AF_UNSPEC, socket.SOCK_STREAM)
+    except socket.gaierror as exc:
+        raise ValueError(
+            f"{var_name}={url!r} hostname {hostname!r} could not be resolved: {exc}"
+        ) from exc
+
+    for _family, _type, _proto, _canonname, sockaddr in results:
+        addr_str = sockaddr[0]
+        try:
+            ip = ipaddress.ip_address(addr_str)
+        except ValueError:
+            continue
+
+        # Block cloud-metadata ranges first — these take precedence over the
+        # is_private check because on Python <=3.10 link-local (169.254.0.0/16)
+        # is included in is_private, and we must never allow IMDS addresses
+        # regardless of how the stdlib classifies them.
+        for blocked in _BLOCKED_NETWORKS:
+            if ip in blocked:
+                raise ValueError(
+                    f"{var_name}={url!r} resolves to {ip}, which is in the "
+                    f"blocked range {blocked}. This range is reserved for cloud "
+                    "instance metadata and must not be contacted by the pipeline."
+                )
+
+        # Loopback (127.x, ::1) and RFC-1918 private addresses are allowed —
+        # this covers localhost Ollama and LAN-hosted Ollama instances.
+        if ip.is_loopback or ip.is_private:
+            continue
+
+    return url
 
 
 @dataclass(frozen=True)
@@ -90,8 +165,16 @@ def load_settings(*, persist_dir: Path | None = None, notes_dir: Path | None = N
     """
     repo_root = Path(__file__).resolve().parents[2]  # src/onclab/config.py -> ../.. = project root
 
+    ollama_host = validate_service_url(
+        os.getenv("OLLAMA_HOST", "http://localhost:11434"),
+        "OLLAMA_HOST",
+    )
+    phoenix_endpoint = os.getenv("PHOENIX_COLLECTOR_ENDPOINT", "http://localhost:6006")
+    if phoenix_endpoint:
+        validate_service_url(phoenix_endpoint, "PHOENIX_COLLECTOR_ENDPOINT")
+
     return Settings(
-        ollama_host=os.getenv("OLLAMA_HOST", "http://localhost:11434"),
+        ollama_host=ollama_host,
         llm_model=os.getenv("ONCLAB_LLM_MODEL", "qwen3:14b"),
         embed_model=os.getenv("ONCLAB_EMBED_MODEL", "nomic-embed-text"),
         persist_dir=persist_dir or (repo_root / "data" / "chroma_db"),
