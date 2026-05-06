@@ -26,7 +26,7 @@ from onclab.llm_client import OllamaClient
 def test_generate_succeeds_on_first_try():
     """No retry needed — a single call returns immediately."""
     client = OllamaClient(host="http://localhost:11434", model="qwen3:14b")
-    fake_response = {"response": "  non-small cell lung cancer  "}
+    fake_response = MagicMock(response="  non-small cell lung cancer  ")
     client._client = MagicMock()
     client._client.generate.return_value = fake_response
 
@@ -41,7 +41,7 @@ def test_generate_succeeds_on_first_try():
 def test_generate_retries_on_transient_failure_then_succeeds():
     """First two attempts raise; third attempt succeeds."""
     client = OllamaClient(host="http://localhost:11434", model="qwen3:14b")
-    fake_response = {"response": "glioblastoma"}
+    fake_response = MagicMock(response="glioblastoma")
     client._client = MagicMock()
     client._client.generate.side_effect = [
         ConnectionError("Ollama is restarting"),
