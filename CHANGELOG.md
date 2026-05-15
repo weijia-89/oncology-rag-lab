@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.4] - 2026-05-15
+
+### Changed
+
+- **README corpus framing corrected.** The hero previously described the eval surface as "a laptop and 8 synthetic notes," which under-counted the corpus by 12. The repo also ships 12 adversarial edge-case notes in `data/edge_case_notes/` (copy-forward staleness, unfilled SmartPhrase templates, Dragon transcription errors, staging-system collisions, negation traps, blinded trial regimens, unit ambiguity, and 5 more), each designed to break a specific extractor failure mode that the textbook-clean base notes do not exercise. README now reflects 8 + 12 = 20 notes, surfaces `data/FIDELITY_REVIEW.md` as evidence that the synthetic corpus has been adversarially reviewed against MTSamples real notes, and expands the License/Provenance section. The "150M documents instead of 8" design question now reads "instead of 20."
+- **Added `LICENSE` (MIT).** Code in `src/onclab/` and `scripts/` is now explicitly MIT-licensed. Note that the synthetic clinical content is invented; the 3 MTSamples reference notes used only for the fidelity review are de-identified at source and git-ignored.
+- **Removed `pandas>=2.2` and `pytest-asyncio>=0.23` from `pyproject.toml`.** Neither was imported anywhere in `src/onclab/` or `tests/`. Pandas was listed for "gold-standard CSV manipulation + drift reports," but the actual CSV manipulation uses stdlib `csv`; the drift report path doesn't manipulate frames either. `pytest-asyncio` was listed for async tests, but there are no async tests. Shrinks the install surface with no functional change.
+- **Bumped pyproject version 0.1.0 (stale) -> 0.1.4.**
+
 ## [0.1.3] - 2026-05-06
 
 ### Fixed

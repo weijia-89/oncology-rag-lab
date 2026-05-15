@@ -51,3 +51,31 @@ def test_parse_partial_json_is_lenient():
     assert parsed is not None
     assert parsed.value == "ABVD"
     assert parsed.rationale == ""  # default
+
+
+def test_parse_handles_braces_in_string_values():
+    """Regression: the old r"\\{[^{}]*\\}" regex broke on rationales like
+    'FOLFOX {6 cycles}' or staging codes 'T2bN2M0 {per CT}'. The brace-aware
+    scanner must walk past braces that live inside string values."""
+    raw = '{"value": "FOLFOX", "confidence": 0.88, "rationale": "regimen recorded as FOLFOX {6 cycles} per oncology note"}'
+    parsed = _parse_response(raw)
+    assert parsed is not None
+    assert parsed.value == "FOLFOX"
+    assert "{6 cycles}" in parsed.rationale
+
+
+def test_parse_clamps_out_of_range_confidence():
+    """Small models occasionally emit confidence > 1.0 ('confidence: 95'
+    meaning 95%). _parse_response should clamp into [0, 1] instead of
+    letting an absurd value poison downstream regression gates."""
+    raw = '{"value": "IIIA", "confidence": 95, "rationale": "model returned a percent"}'
+    parsed = _parse_response(raw)
+    assert parsed is not None
+    assert parsed.confidence == 1.0
+
+
+def test_parse_rejects_non_numeric_confidence():
+    """If confidence is unparseable, return None rather than synthesizing
+    a fake 0.0 that downstream code might trust."""
+    raw = '{"value": "IIIA", "confidence": "high", "rationale": "string instead of number"}'
+    assert _parse_response(raw) is None

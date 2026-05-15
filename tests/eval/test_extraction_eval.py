@@ -32,8 +32,8 @@ import pytest
 # installed in normal use; the deferred import is for clarity.)
 deepeval = pytest.importorskip("deepeval", reason="deepeval not installed")
 from deepeval import assert_test  # noqa: E402
-from deepeval.metrics import AnswerRelevancyMetric  # noqa: E402
-from deepeval.test_case import LLMTestCase  # noqa: E402
+from deepeval.metrics import GEval  # noqa: E402
+from deepeval.test_case import LLMTestCase, LLMTestCaseParams  # noqa: E402
 
 from onclab.extract import (  # noqa: E402
     ENTITY_TYPES,
@@ -119,12 +119,26 @@ def test_extraction_matches_gold(
             f"{patient_id}/{entity_type}: expected '{expected}', got '{actual}'"
         )
     else:
-        # For regimen/histology, fall back to DeepEval's relevancy metric
-        # — this is where you'd plug in custom GEval metrics in a real lab.
+        # For regimen/histology, use GEval to check clinical correctness against
+        # the expected output. AnswerRelevancyMetric only measures whether the
+        # output is relevant to the *input query* — it doesn't compare against
+        # expected_output, so a wrong regimen would still pass. GEval explicitly
+        # evaluates ACTUAL_OUTPUT vs EXPECTED_OUTPUT with a clinical-aware criteria.
         test_case = LLMTestCase(
             input=f"What is the {entity_type} for {patient_id}?",
             actual_output=result.value,
             expected_output=expected,
         )
-        metric = AnswerRelevancyMetric(threshold=settings.answer_relevancy_threshold)
+        metric = GEval(
+            name="Extraction Correctness",
+            criteria=(
+                "The actual output must match the expected output. "
+                "For medical entities (regimen, histology, stage), allow minor "
+                "abbreviation variation (e.g., 'TMZ' = 'temozolomide', "
+                "'GBM' = 'glioblastoma multiforme') but the clinical meaning "
+                "must be the same."
+            ),
+            evaluation_params=[LLMTestCaseParams.ACTUAL_OUTPUT, LLMTestCaseParams.EXPECTED_OUTPUT],
+            threshold=settings.answer_relevancy_threshold,
+        )
         assert_test(test_case, [metric])

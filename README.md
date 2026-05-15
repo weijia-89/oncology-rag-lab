@@ -2,7 +2,9 @@
 
 [![CI](https://github.com/weijia-89/oncology-rag-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/weijia-89/oncology-rag-lab/actions/workflows/ci.yml)
 
-A working RAG pipeline that extracts structured oncology entities from synthetic clinical notes: cancer type, AJCC stage, regimen, ECOG. The pipeline itself isn't the interesting part. What's worth looking at is the testing infrastructure around it, because that's the part you'd actually need to trust before running something like this on real clinical data: DeepEval-driven eval, a regression gate that fails CI if the pass rate drops more than 5% versus baseline, A/B drift detection between model versions, and Arize Phoenix for observability. Same building blocks a production oncology pipeline needs, at the scale of a laptop and 8 synthetic notes.
+A working RAG pipeline that extracts structured oncology entities from synthetic clinical notes: cancer type, AJCC stage, regimen, ECOG. The pipeline itself isn't the interesting part. What's worth looking at is the testing infrastructure around it, because that's the part you'd actually need to trust before running something like this on real clinical data: DeepEval-driven eval, a regression gate that fails CI if the pass rate drops more than 5% versus baseline, A/B drift detection between model versions, and Arize Phoenix for observability. Same building blocks a production oncology pipeline needs, at the scale of a laptop, 8 base synthetic notes, and 12 adversarial edge-case notes designed to break the extractor in specific ways (copy-forward staleness, unfilled SmartPhrase templates, Dragon transcription errors, staging-system collisions, negation traps, blinded trial regimens, unit ambiguity).
+
+The synthetic corpus has known limits. `data/FIDELITY_REVIEW.md` writes them down. It compares the 8 base notes against 3 real de-identified MTSamples transcriptions and catalogues 12 ways the synthetic notes diverge from clinical reality: hyper-structured template format, no comorbidities, no hedge language, ECOG distribution skewed toward 0-1, biomarker results showing up at the wrong visit type, and so on. An extractor that passes on the synthetic corpus alone is not a production-ready extractor. The 12 edge-case notes push past the textbook-clean format the base notes share.
 
 ## What's in the box
 
@@ -23,7 +25,7 @@ A working RAG pipeline that extracts structured oncology entities from synthetic
 # 1. Install Ollama (https://ollama.com), then start it.
 # 2. From this directory:
 scripts/bootstrap.sh # uv sync + ollama pull qwen3:14b + nomic-embed-text
-make ingest # chunk + embed + index 8 synthetic notes
+make ingest # chunk + embed + index the synthetic corpus (8 base + 12 edge-case notes)
 make extract # see the structured outputs for each note
 ```
 
@@ -57,13 +59,13 @@ Each file has a top-of-module comment explaining the design decision and what wa
 
 ## Hardware notes
 
-Sized for an RTX 4070 Ti Super (16 GB VRAM) with 32 GB system RAM. Qwen3 14B Q4_K_M lands at around 8.7 GB and runs at roughly 30-40 tokens/sec on that card. If you've got 8 GB VRAM, swap to llama3.1:8b in `.env` and the eval suite will still pass.
+Sized for an RTX 4070 Ti Super (16 GB VRAM) with 32 GB system RAM. Qwen3 14B Q4_K_M lands at around 8.7 GB and runs at roughly 30-40 tokens/sec on that card; if you've got 8 GB VRAM, swap to llama3.1:8b in `.env` and the eval suite will still pass.
 
-vLLM is intentionally absent. For single-user batch eval, Ollama is faster to set up and gives you comparable throughput; vLLM's advantages show up at concurrent-request scale, which is not something a one-person eval harness ever reaches.
+vLLM is intentionally absent. For single-user batch eval, Ollama is faster to set up and gives you comparable throughput. vLLM's advantages are at concurrent-request scale, which a one-person eval harness never hits.
 
 ## Design questions worth thinking through
 
-- What changes if the corpus is 150M documents instead of 8? (Chunking strategy, embedding batch size, ChromaDB → managed vector store, async ingest pipeline.)
+- What changes if the corpus is 150M documents instead of 20? (Chunking strategy, embedding batch size, ChromaDB → managed vector store, async ingest pipeline.)
 - How does test design change when FDA sensitivity/specificity replaces internal SLAs? (Weighted precision/recall metrics in GEval; stricter false-negative budget for critical entities like `ajcc_stage`.)
 - Where does the audit trail live in this design? (Every retrieval call traces to Phoenix; every entity carries a rationale string.)
 
@@ -75,4 +77,6 @@ vLLM is intentionally absent. For single-user batch eval, Ollama is faster to se
 
 ## License / Provenance
 
-All clinical content in `data/synthetic_notes/` is invented. No PHI. `data/real_notes/` is git-ignored and never committed.
+All clinical content in `data/synthetic_notes/` and `data/edge_case_notes/` is invented. No PHI. The 3 reference transcriptions in `data/real_notes/` (used only for the fidelity review) come from MTSamples, are already de-identified at the source, and are git-ignored so the repo never re-publishes them. See `data/FIDELITY_REVIEW.md` for the methodology and the 12 fidelity gaps the synthetic notes do not cover.
+
+Code is MIT-licensed (see `LICENSE`).

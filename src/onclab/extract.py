@@ -43,10 +43,9 @@ PROMPT INJECTION NOTE (interview-relevant):
 from __future__ import annotations
 
 import json
-import re
 from dataclasses import dataclass
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
 
 from .config import Settings
 from .llm_client import OllamaClient
@@ -139,7 +138,39 @@ _ENTITY_PROMPTS: dict[str, str] = {
 # ---------------------------------------------------------------------------
 # Extraction
 # ---------------------------------------------------------------------------
-_JSON_PATTERN = re.compile(r"\{[^{}]*\}", re.DOTALL)
+
+def _find_json_object(text: str) -> str | None:
+    """Find the first complete JSON object in text, handling braces in string values.
+
+    The naive r"\\{[^{}]*\\}" regex breaks when rationale contains curly braces
+    (common in clinical text: "FOLFOX {6 cycles}", staging codes like "T2bN2M0
+    {per CT}"). This scanner tracks quote context so braces inside string values
+    don't disturb depth counting.
+    """
+    start = text.find('{')
+    if start == -1:
+        return None
+    depth = 0
+    in_string = False
+    escape_next = False
+    for i, ch in enumerate(text[start:], start):
+        if escape_next:
+            escape_next = False
+            continue
+        if ch == '\\' and in_string:
+            escape_next = True
+            continue
+        if ch == '"':
+            in_string = not in_string
+            continue
+        if not in_string:
+            if ch == '{':
+                depth += 1
+            elif ch == '}':
+                depth -= 1
+                if depth == 0:
+                    return text[start:i + 1]
+    return None
 
 
 def _parse_response(raw: str) -> ExtractedEntity | None:
@@ -147,23 +178,25 @@ def _parse_response(raw: str) -> ExtractedEntity | None:
 
     Why we don't just `json.loads(raw)`: small LLMs sometimes emit a
     leading "Sure! Here's the JSON:" or wrap the answer in markdown
-    fences. The regex pulls out the first {...} block. If even that
-    fails, we return None and the caller decides whether that's a hard
-    error or a 'unknown' answer.
+    fences. _find_json_object pulls out the first complete {...} block,
+    respecting braces inside string values. If even that fails, we return
+    None and the caller decides whether that's a hard error or an 'unknown'
+    answer.
     """
-    match = _JSON_PATTERN.search(raw)
-    if not match:
+    blob = _find_json_object(raw)
+    if blob is None:
         return None
     try:
-        payload = json.loads(match.group(0))
-    except json.JSONDecodeError:
+        payload = json.loads(blob)
+        confidence = max(0.0, min(1.0, float(payload.get("confidence", 0.0))))
+        return ExtractedEntity(
+            entity_type="",  # filled in by caller; the model isn't asked for this
+            value=str(payload.get("value", "unknown")).strip(),
+            confidence=confidence,
+            rationale=str(payload.get("rationale", "")).strip(),
+        )
+    except (json.JSONDecodeError, ValueError, TypeError, ValidationError):
         return None
-    return ExtractedEntity(
-        entity_type="",  # filled in by caller; the model isn't asked for this
-        value=str(payload.get("value", "unknown")).strip(),
-        confidence=float(payload.get("confidence", 0.0)),
-        rationale=str(payload.get("rationale", "")).strip(),
-    )
 
 
 def extract_entity(

@@ -20,7 +20,7 @@ packages = ["src/onclab"]
 
 [project]
 name = "onclab"
-version = "0.1.0"
+version = "0.1.4"
 description = "Local oncology RAG testbed: Ollama + LlamaIndex + DeepEval + Phoenix"
 requires-python = ">=3.11"
 
@@ -64,7 +64,6 @@ dependencies = [
     "pydantic>=2.7",   # entity-extraction output validation
     "typer>=0.12",     # CLI: `onclab ingest`, `onclab extract`, `onclab eval`
     "rich>=13.7",      # readable terminal output for the CLI
-    "pandas>=2.2",     # gold-standard CSV manipulation + drift reports
 ]
 
 [project.scripts]
@@ -77,7 +76,6 @@ onclab = "onclab.cli:app"
 # but keeping the split is good practice and matches Wei's other projects).
 dev = [
     "pytest>=8.2",
-    "pytest-asyncio>=0.23",
     "pytest-json-report>=1.5",  # writes results to JSON for the regression gate
     "ruff>=0.4",
 ]
