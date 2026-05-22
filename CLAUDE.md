@@ -30,3 +30,13 @@ See `src/onclab/__init__.py` for the package layout map. See `applications/mckes
 ## Where the strategic context lives
 - `applications/mckesson/strategy_mckesson.md` — full role strategy + lab curriculum (single source of truth).
 - `README.md` — user-facing quickstart, points back to the strategy doc for the curriculum.
+
+## Cursor Cloud specific instructions
+
+The update script runs `uv sync` in this repo.
+
+- **Unit tests:** `uv run pytest tests/unit -v -m "not eval and not drift"` (30 tests, no Ollama needed)
+- **Lint:** `uv run ruff check src/ tests/ scripts/` (1 pre-existing E501 in `tests/unit/test_extract_parse.py:60`)
+- **Mock eval:** `MOCK_LLM=1 uv run pytest tests/eval -v -m eval` (tests eval pipeline scaffolding without Ollama)
+- **Real eval/ingest/extract** require Ollama running locally with `qwen3:14b` and `nomic-embed-text` models. These are not available in the Cloud Agent VM by default.
+- `MOCK_LLM=1` is set automatically by `tests/conftest.py` for the entire test session; unit tests never need a real LLM.
