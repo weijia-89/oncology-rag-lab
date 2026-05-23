@@ -44,6 +44,49 @@ def settings(repo_root: Path):
     )
 
 
+def build_in_memory_eval_index(repo_root: Path, settings):
+    """Ephemeral Chroma index from synthetic notes (no Ollama, no disk ingest).
+
+    Used by tests/eval/test_retrieval.py when data/chroma_db/ is absent so
+    eval-mock and local runs get signal without `make ingest`.
+    """
+    pytest.importorskip("llama_index")
+    pytest.importorskip("chromadb")
+
+    import chromadb
+    from llama_index.core import Settings as LIxSettings
+    from llama_index.core import StorageContext, VectorStoreIndex
+    from llama_index.core.schema import Document
+    from llama_index.vector_stores.chroma import ChromaVectorStore
+
+    try:
+        from llama_index.core.embeddings import MockEmbedding  # type: ignore[import]
+    except ImportError:
+        pytest.skip("MockEmbedding not available in this llama-index version.")
+
+    LIxSettings.embed_model = MockEmbedding(embed_dim=8)
+
+    note_paths = sorted((repo_root / "data" / "synthetic_notes").glob("*.txt"))
+    if not note_paths:
+        pytest.skip("No synthetic notes under data/synthetic_notes/")
+
+    documents = [
+        Document(text=path.read_text(encoding="utf-8"), metadata={"source": path.name})
+        for path in note_paths
+    ]
+
+    chroma_client = chromadb.EphemeralClient()
+    collection = chroma_client.get_or_create_collection("oncology_eval_test")
+    vector_store = ChromaVectorStore(chroma_collection=collection)
+    storage_context = StorageContext.from_defaults(vector_store=vector_store)
+
+    return VectorStoreIndex.from_documents(
+        documents,
+        storage_context=storage_context,
+        show_progress=False,
+    )
+
+
 @pytest.fixture
 def mock_client(settings):
     """OllamaClient instance honoring MOCK_LLM=1.

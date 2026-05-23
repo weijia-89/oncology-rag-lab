@@ -57,7 +57,10 @@ def test_parse_handles_braces_in_string_values():
     """Regression: the old r"\\{[^{}]*\\}" regex broke on rationales like
     'FOLFOX {6 cycles}' or staging codes 'T2bN2M0 {per CT}'. The brace-aware
     scanner must walk past braces that live inside string values."""
-    raw = '{"value": "FOLFOX", "confidence": 0.88, "rationale": "regimen recorded as FOLFOX {6 cycles} per oncology note"}'
+    raw = (
+        '{"value": "FOLFOX", "confidence": 0.88, '
+        '"rationale": "regimen recorded as FOLFOX {6 cycles} per oncology note"}'
+    )
     parsed = _parse_response(raw)
     assert parsed is not None
     assert parsed.value == "FOLFOX"
