@@ -87,6 +87,32 @@ def build_in_memory_eval_index(repo_root: Path, settings):
     )
 
 
+@pytest.fixture(scope="module")
+def eval_retrieval_index(settings, repo_root):
+    """Persisted Chroma if present; otherwise in-memory synthetic notes."""
+    if settings.persist_dir.exists():
+        from onclab.ingest import load_index
+
+        return load_index(settings)
+
+    return build_in_memory_eval_index(repo_root, settings)
+
+
+@pytest.fixture(scope="module")
+def retrieval_settings(settings, repo_root):
+    """Widen top_k when using the in-memory fallback (MockEmbedding)."""
+    if settings.persist_dir.exists():
+        return settings
+
+    from dataclasses import replace
+
+    note_count = len(list((repo_root / "data" / "synthetic_notes").glob("*.txt")))
+    if note_count == 0:
+        return settings
+
+    return replace(settings, top_k=note_count)
+
+
 @pytest.fixture
 def mock_client(settings):
     """OllamaClient instance honoring MOCK_LLM=1.
