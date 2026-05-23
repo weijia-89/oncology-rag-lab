@@ -60,6 +60,27 @@ ENTITY_TYPES: tuple[str, ...] = (
     "ecog",
 )
 
+# Substrings that must never appear in an extracted `value`. Checked after
+# lowercasing so "IGNORE PREVIOUS" in a hijacked model answer is caught.
+FORBIDDEN_VALUE_SUBSTRINGS: tuple[str, ...] = (
+    "ignore previous",
+    "system prompt",
+    "you are now",
+    "```",
+    '{"value"',
+)
+
+MAX_VALUE_LENGTH = 200
+
+
+def value_within_closed_vocabulary(value: str) -> bool:
+    """Return True when `value` looks like a bounded clinical phrase, not a hijack."""
+    stripped = value.strip()
+    if not stripped or len(stripped) > MAX_VALUE_LENGTH:
+        return False
+    lower = stripped.lower()
+    return not any(needle in lower for needle in FORBIDDEN_VALUE_SUBSTRINGS)
+
 
 # ---------------------------------------------------------------------------
 # Output schema
@@ -240,6 +261,13 @@ def extract_entity(
             rationale=f"parse_failure: {raw[:120]!r}",
         )
     parsed.entity_type = entity_type
+    if not value_within_closed_vocabulary(parsed.value):
+        return ExtractedEntity(
+            entity_type=entity_type,
+            value="unknown",
+            confidence=0.0,
+            rationale=f"injection_guard: rejected value {parsed.value[:80]!r}",
+        )
     return parsed
 
 
