@@ -109,3 +109,16 @@ select = ["E", "F", "I", "UP", "B"]
 # the option metadata. Disable globally; we don't use that pattern outside
 # the typer CLI.
 ignore = ["B008"]
+
+[tool.uv]
+# Universal lock must resolve for CI (linux x86_64) and local dev on both Mac
+# architectures. onnxruntime 1.26+ dropped Intel-mac wheels; ChromaDB pulls it
+# transitively for its default embedding path (this project uses Ollama instead).
+required-environments = [
+    "sys_platform == 'linux' and platform_machine == 'x86_64'",
+    "sys_platform == 'darwin' and platform_machine == 'x86_64'",
+    "sys_platform == 'darwin' and platform_machine == 'arm64'",
+]
+override-dependencies = [
+    "onnxruntime==1.23.2",
+]
