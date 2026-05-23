@@ -15,6 +15,10 @@ Why this layer is testable with classical asserts:
 These tests use the session-scoped `eval_index` fixture from conftest.py,
 which builds an in-memory ChromaDB index from `data/synthetic_notes/`.
 No prior `make ingest` step is required — CI-friendly by design.
+
+When `data/chroma_db/` exists locally, conftest also exposes
+`eval_retrieval_index` / `retrieval_settings` for runs against a persisted
+index; this file targets the in-memory path so CI stays self-contained.
 """
 
 from __future__ import annotations
