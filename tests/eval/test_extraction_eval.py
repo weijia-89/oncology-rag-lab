@@ -32,9 +32,9 @@ import pytest
 # installed in normal use; the deferred import is for clarity.)
 deepeval = pytest.importorskip("deepeval", reason="deepeval not installed")
 from deepeval import assert_test  # noqa: E402
-from deepeval.metrics import GEval  # noqa: E402
-from deepeval.test_case import LLMTestCase, LLMTestCaseParams  # noqa: E402
+from deepeval.test_case import LLMTestCase  # noqa: E402
 
+from onclab.eval_metrics import regimen_histology_geval  # noqa: E402
 from onclab.extract import (  # noqa: E402
     ENTITY_TYPES,
     ExtractionRequest,
@@ -119,26 +119,34 @@ def test_extraction_matches_gold(
             f"{patient_id}/{entity_type}: expected '{expected}', got '{actual}'"
         )
     else:
-        # For regimen/histology, use GEval to check clinical correctness against
-        # the expected output. AnswerRelevancyMetric only measures whether the
-        # output is relevant to the *input query* — it doesn't compare against
-        # expected_output, so a wrong regimen would still pass. GEval explicitly
-        # evaluates ACTUAL_OUTPUT vs EXPECTED_OUTPUT with a clinical-aware criteria.
+        # Regimen/histology: shared clinical-plausibility rubric (eval_metrics).
+        # Gold rows with alias-friendly wording the rubric must accept:
+        #   SYN-003/regimen — FOLFOX + bevacizumab (FOLFOX abbreviation OK)
+        #   SYN-008/regimen — temozolomide + radiation (TMZ/Stupp synonyms OK)
+        #   SYN-005/histology — classical Hodgkin lymphoma nodular sclerosis
         test_case = LLMTestCase(
             input=f"What is the {entity_type} for {patient_id}?",
             actual_output=result.value,
             expected_output=expected,
         )
-        metric = GEval(
-            name="Extraction Correctness",
-            criteria=(
-                "The actual output must match the expected output. "
-                "For medical entities (regimen, histology, stage), allow minor "
-                "abbreviation variation (e.g., 'TMZ' = 'temozolomide', "
-                "'GBM' = 'glioblastoma multiforme') but the clinical meaning "
-                "must be the same."
-            ),
-            evaluation_params=[LLMTestCaseParams.ACTUAL_OUTPUT, LLMTestCaseParams.EXPECTED_OUTPUT],
-            threshold=settings.answer_relevancy_threshold,
-        )
+        metric = regimen_histology_geval(threshold=settings.answer_relevancy_threshold)
         assert_test(test_case, [metric])
+
+
+@pytest.mark.parametrize(
+    ("patient_id", "entity_type", "alias_note"),
+    [
+        ("SYN-003", "regimen", "FOLFOX shorthand for oxaliplatin/5-FU/leucovorin combo"),
+        ("SYN-008", "regimen", "TMZ acceptable for temozolomide in Stupp protocol"),
+    ],
+)
+def test_regimen_histology_rubric_gold_alias_rows(
+    patient_id: str,
+    entity_type: str,
+    alias_note: str,
+    gold: dict[tuple[str, str], str],
+):
+    """Document gold_standard rows where wording may differ but meaning matches."""
+    key = (patient_id, entity_type)
+    assert key in gold, f"missing gold row for rubric example: {key}"
+    assert alias_note
