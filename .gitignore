@@ -7,7 +7,6 @@
 
 # uv / venv
 .venv/
-uv.lock
 
 # Project artifacts
 .env
