@@ -12,9 +12,9 @@ Why this layer is testable with classical asserts:
     or the corpus itself — never in 'the model felt like a different
     answer today'.
 
-If data/chroma_db/ is missing, conftest builds an in-memory index from
-synthetic notes (MockEmbedding) so eval-mock still exercises retrieval.
-Semantic ranking needs a real ingest; in-memory mode uses top_k=len(notes).
+These tests use the session-scoped `eval_index` fixture from conftest.py,
+which builds an in-memory ChromaDB index from `data/synthetic_notes/`.
+No prior `make ingest` step is required — CI-friendly by design.
 """
 
 from __future__ import annotations
@@ -24,46 +24,34 @@ import pytest
 pytestmark = pytest.mark.eval
 
 
-def test_lung_query_retrieves_lung_note(eval_retrieval_index, retrieval_settings):
+def test_lung_query_retrieves_lung_note(eval_index, settings):
     """Asking a lung-specific question should pull the SYN-001 chunk."""
     from onclab.rag import retrieve_only
 
-    chunks = retrieve_only(
-        eval_retrieval_index,
-        "What stage is the lung cancer patient?",
-        retrieval_settings,
-    )
+    chunks = retrieve_only(eval_index, "What stage is the lung cancer patient?", settings)
     joined = " ".join(chunks).lower()
     assert "non-small cell" in joined or "syn-001" in joined, (
-        f"Expected lung-cancer chunk in top_k={retrieval_settings.top_k}; got: {joined[:200]!r}"
+        f"Expected lung-cancer chunk in top_k={settings.top_k}; got: {joined[:200]!r}"
     )
 
 
-def test_glioblastoma_query_retrieves_glioblastoma_note(
-    eval_retrieval_index, retrieval_settings
-):
+def test_glioblastoma_query_retrieves_glioblastoma_note(eval_index, settings):
     """Specific term ('glioblastoma') should retrieve the SYN-008 chunk."""
     from onclab.rag import retrieve_only
 
-    chunks = retrieve_only(
-        eval_retrieval_index, "Which patient has glioblastoma?", retrieval_settings
-    )
+    chunks = retrieve_only(eval_index, "Which patient has glioblastoma?", settings)
     joined = " ".join(chunks).lower()
     assert "glioblastoma" in joined or "syn-008" in joined
 
 
-def test_unrelated_query_does_not_retrieve_random_garbage(
-    eval_retrieval_index, retrieval_settings
-):
+def test_unrelated_query_does_not_retrieve_random_garbage(eval_index, settings):
     """Sanity check: an off-topic query shouldn't surface oncology-specific
     fingerprints with high similarity. This is mostly a smoke test — if
     everything is returning the same chunks for every query, your embedding
     model is probably broken or the chunks are too short."""
     from onclab.rag import retrieve_only
 
-    chunks = retrieve_only(
-        eval_retrieval_index, "What is the capital of France?", retrieval_settings
-    )
+    chunks = retrieve_only(eval_index, "What is the capital of France?", settings)
     # We just assert SOMETHING came back (top_k won't be zero) and that the
     # results aren't identical to the lung-query results above. A more
     # rigorous version would compute similarity scores and assert they're
