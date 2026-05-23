@@ -2,6 +2,8 @@
 
 [![CI](https://github.com/weijia-89/oncology-rag-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/weijia-89/oncology-rag-lab/actions/workflows/ci.yml)
 
+**Recent (2026-05-23):** Injection guard merged ([PR #2](https://github.com/weijia-89/oncology-rag-lab/pull/2) → `dbacc60`). GEval regimen/histology [PR #3](https://github.com/weijia-89/oncology-rag-lab/pull/3).
+
 I built onclab to study the testing infrastructure a production oncology RAG pipeline would have to ship before it could safely touch real clinical data. The pipeline itself is intentionally ordinary, an extractor for structured oncology entities (cancer type, AJCC stage, regimen, ECOG) running over synthetic clinical notes via LlamaIndex on Chroma with Ollama for inference. The part I spent the time on is the wrap around it, the DeepEval suite scored against gold-standard labels, the regression gate that fails CI if pass rate drops more than 5% versus baseline, A/B drift detection between model versions, and the Arize Phoenix traces that record every retrieval and extraction so the audit trail exists in the artifact rather than the design doc.
 
 The corpus is small on purpose. I wrote 8 base synthetic notes and 12 adversarial edge-case notes. Each adversarial note targets a specific failure mode a real clinical pipeline hits:

@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- **Regimen/histology GEval rubric** (`src/onclab/eval_metrics.py`): shared `regimen_histology_geval` with clinical-plausibility criteria (abbreviation aliases, line-of-therapy equivalence, wrong-class rejection); wired in `tests/eval/test_extraction_eval.py` and `tests/unit/test_eval_metrics.py` (ROADMAP near-term §2).
+
 ## [0.1.4] - 2026-05-15
 
 ### Changed
