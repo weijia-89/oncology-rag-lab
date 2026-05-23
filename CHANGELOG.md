@@ -4,6 +4,7 @@
 
 ### Added
 
+- **Edge-case gold eval** (`tests/eval/test_edge_case_gold.py`): parameterizes over `data/gold_standard_edge_cases.csv` (12 patients × extractable entities) with MOCK_LLM oracle keys and the same exact-match / `regimen_histology_geval` split as the base suite (ROADMAP longer-term §1).
 - **Committed `uv.lock`**: reproducible installs via `uv sync --frozen --all-groups`; run `uv lock` after changing `pyproject.toml` (ROADMAP near-term §3).
 
 - **Regimen/histology GEval rubric** (`src/onclab/eval_metrics.py`): shared `regimen_histology_geval` with clinical-plausibility criteria (abbreviation aliases, line-of-therapy equivalence, wrong-class rejection); wired in `tests/eval/test_extraction_eval.py` and `tests/unit/test_eval_metrics.py` (ROADMAP near-term §2).

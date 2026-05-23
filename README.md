@@ -50,6 +50,8 @@ make eval # DeepEval-driven tests with real Ollama calls (slow)
 make check-regression # gate: did pass rate drop >5% vs baseline?
 ```
 
+Extraction eval covers **8 base** gold patients (`data/gold_standard.csv`) plus **12 edge-case** gold rows (`data/gold_standard_edge_cases.csv`) in `tests/eval/test_extraction_eval.py` and `tests/eval/test_edge_case_gold.py`.
+
 For unit tests with no Ollama dependency:
 
 ```bash
