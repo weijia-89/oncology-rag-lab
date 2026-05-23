@@ -8,6 +8,9 @@
 # uv / venv
 .venv/
 
+# DeepEval local cache (telemetry only; not a dependency)
+.deepeval/
+
 # Project artifacts
 .env
 data/chroma_db/
