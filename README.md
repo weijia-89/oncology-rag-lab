@@ -41,6 +41,8 @@ make ingest # chunk + embed + index the synthetic corpus (8 base + 12 edge-case 
 make extract # see the structured outputs for each note
 ```
 
+For reproducible installs from the committed lockfile: `uv sync --frozen --all-groups` (fails if `pyproject.toml` changed without `uv lock`).
+
 To run the eval suite end-to-end:
 
 ```bash
