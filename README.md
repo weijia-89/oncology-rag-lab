@@ -64,7 +64,7 @@ make test-unit # MOCK_LLM=1; runs in seconds; CI-friendly
 MOCK_LLM=1 uv run pytest tests/eval/test_embedding_drift.py -q
 ```
 
-**Corpus scale stress:** `tests/eval/test_corpus_scale_stress.py` ingests **100** templated synthetic notes into an in-memory Chroma index (reusing `scripts/seed_data.py` helpers) and runs 12 representative retrieval queries with generous latency/count thresholds — no Ollama, no persisted `data/chroma_db/`, no `make ingest`. A full 500-note file-backed run remains manual via `scripts/seed_data.py --count 500` plus `make ingest`. Run locally:
+**Corpus scale stress:** `tests/eval/test_corpus_scale_stress.py` ingests **100** templated synthetic notes into an in-memory Chroma index (reusing `scripts/seed_data.py` helpers) and runs 12 representative retrieval queries with generous latency/count thresholds — no Ollama, no persisted `data/chroma_db/`, no `make ingest`. A full 500-note file-backed run remains manual via `scripts/seed_data.py --count 500` plus `make ingest`. The test is marked `eval` like other harness tests, so GitHub Actions (unit-only, `-m "not eval and not drift"`) does not run it on PR/push; run it via SDK verify or `make eval-mock`. Run locally:
 
 ```bash
 MOCK_LLM=1 uv run pytest tests/eval/test_corpus_scale_stress.py -q

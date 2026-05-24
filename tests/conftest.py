@@ -116,7 +116,6 @@ def make_templated_note_nodes(repo_root: Path, count: int, *, seed: int = 42):
     pytest.importorskip("llama_index", reason="llama_index not installed")
 
     import importlib.util
-    import random
 
     from llama_index.core.schema import TextNode
 
@@ -127,13 +126,9 @@ def make_templated_note_nodes(repo_root: Path, count: int, *, seed: int = 42):
     seed_data = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(seed_data)
 
-    random.seed(seed)
+    # sdk-review F3: reuse seed_data.generate_notes so paths/IDs stay aligned with disk writes
     nodes: list[TextNode] = []
-    for i in range(count):
-        case = seed_data.CASES[i % len(seed_data.CASES)]
-        text = seed_data.render(i, case)
-        patient_num = 100 + i
-        path = f"patient_{patient_num:03d}.txt"
+    for path, text in seed_data.generate_notes(count, seed=seed):
         nodes.append(
             TextNode(
                 text=text,
@@ -239,11 +234,14 @@ def build_scale_stress_index(settings):
         nodes = make_templated_note_nodes(repo_root, count=count, seed=seed)
         from llama_index.core.embeddings import MockEmbedding
 
-        return build_in_memory_eval_index(
+        # sdk-review F2: assert node count before index build — avoid Chroma private accessors
+        assert len(nodes) == count
+        index = build_in_memory_eval_index(
             settings,
             MockEmbedding(embed_dim=384),
             collection_name="corpus_scale_stress",
             nodes=nodes,
         )
+        return index, len(nodes)
 
     return _build

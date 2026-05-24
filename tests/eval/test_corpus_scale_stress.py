@@ -50,10 +50,10 @@ def test_corpus_scale_stress_ingest_and_retrieval(
     from onclab.rag import retrieve_only
 
     t0 = time.perf_counter()
-    index = build_scale_stress_index(repo_root, CORPUS_SIZE)
-    indexed_count = index._vector_store._collection.count()
-    assert indexed_count == CORPUS_SIZE, (
-        f"Expected {CORPUS_SIZE} indexed nodes, got {indexed_count}"
+    index, node_count = build_scale_stress_index(repo_root, CORPUS_SIZE)
+    # sdk-review F2: node count asserted in fixture before ingest — no _collection.count()
+    assert node_count == CORPUS_SIZE, (
+        f"Expected {CORPUS_SIZE} templated nodes, got {node_count}"
     )
 
     per_query_ms: list[float] = []
