@@ -8,7 +8,7 @@
 # `chocolatey install make`. If you're on the 4070 Ti Super box and
 # don't want WSL, the equivalent commands are in the README.
 
-.PHONY: install bootstrap ingest extract eval eval-mock test-unit lint check-regression phoenix clean audit drift
+.PHONY: install bootstrap ingest extract eval eval-mock ragas-eval ragas-eval-mock test-unit lint check-regression phoenix clean audit drift
 
 # ---- Setup ----
 
@@ -60,6 +60,15 @@ eval-mock:
 	# scaffolding hold together. Fast and CI-friendly.
 	MOCK_LLM=1 uv run pytest tests/eval -v -m eval \
 	  --json-report --json-report-file=eval_results_mock.json
+
+ragas-eval-mock:
+	# Ragas-style RAG metrics report (lexical proxies under MOCK_LLM=1).
+	MOCK_LLM=1 uv run python scripts/ragas_eval.py --output reports/eval_report.json
+
+ragas-eval:
+	# Live DeepEval RAG metrics + report (requires `ollama serve`).
+	@echo "Running RAG eval — needs Ollama for LLM-as-judge metrics."
+	uv run python scripts/ragas_eval.py --output reports/eval_report.json
 
 eval:
 	# Real eval. Calls Ollama. Takes minutes. The number that matters

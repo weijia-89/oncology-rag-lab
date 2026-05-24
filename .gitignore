@@ -16,6 +16,8 @@
 data/chroma_db/
 data/real_notes/
 eval_results*.json
+reports/eval_report.json
+reports/ragas_baseline.json
 drift_report.csv
 reports/
 phoenix_traces/
