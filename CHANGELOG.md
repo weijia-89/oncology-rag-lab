@@ -4,6 +4,7 @@
 
 ### Added
 
+- **Corpus scale stress eval** (`tests/eval/test_corpus_scale_stress.py`): CI-safe in-memory ingest of 100 templated synthetic notes with retrieval latency/count guards; 500-note file-backed run remains manual (ROADMAP longer-term §Scale stress test).
 - **Embedding retrieval drift eval** (`tests/eval/test_embedding_drift.py`): deterministic in-memory A/B over two `MockEmbedding` configs; asserts top-1 chunk ids diverge on the synthetic corpus (ROADMAP near-term §2).
 - **Edge-case gold eval** (`tests/eval/test_edge_case_gold.py`): parameterizes over `data/gold_standard_edge_cases.csv` (12 patients × extractable entities) with MOCK_LLM oracle keys and the same exact-match / `regimen_histology_geval` split as the base suite (ROADMAP longer-term §1).
 - **Committed `uv.lock`**: reproducible installs via `uv sync --frozen --all-groups`; run `uv lock` after changing `pyproject.toml` (ROADMAP near-term §3).

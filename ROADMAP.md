@@ -26,8 +26,8 @@ Last updated: 2026-05-24 (embedding drift eval SDK).
 **Edge-case gold standard** — *shipped 2026-05-23*  
 [PR #5](https://github.com/weijia-89/oncology-rag-lab/pull/5) wired `data/gold_standard_edge_cases.csv` into the extraction eval suite.
 
-**Scale stress test** — *open*  
-Design questions in README identify what changes at 150M documents. `scripts/seed_data.py` can generate hundreds of templated notes; a 500-note ingest/retrieval run would surface file-backed ChromaDB limits before they matter in production.
+**Scale stress test** — *partial (2026-05-24)*  
+CI-safe harness: `tests/eval/test_corpus_scale_stress.py` ingests 100 templated notes into in-memory Chroma (no Ollama, no persisted `data/chroma_db/`). Full 500-note file-backed run via `scripts/seed_data.py --count 500` + `make ingest` remains manual to surface ChromaDB disk limits before production scale.
 
 **Structured output via function-calling** — *open*  
 `extract.py` uses regex JSON fallback when Ollama `format='json'` is model-dependent. Qwen3 function-calling would make `rationale` part of the native output contract and remove parse-failure noise.
