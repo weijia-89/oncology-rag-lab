@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import Any
 
 from onclab.config import Settings, load_settings
+from onclab.eval_embedders import BAG_OF_WORDS_EMBEDDING_MODEL
 from onclab.extract import ENTITY_TYPES, ExtractionRequest, extract_entity
 from onclab.llm_client import OllamaClient
 from onclab.rag import retrieve_only
@@ -38,7 +39,7 @@ from onclab.ragas_eval_report import (
 
 _TOKEN_RE = re.compile(r"[a-z0-9]+")
 
-EMBEDDING_MODEL_EVAL_PROXY = "bag-of-words-inmemory-v1"
+EMBEDDING_MODEL_EVAL_PROXY = BAG_OF_WORDS_EMBEDDING_MODEL
 
 
 def _tokens(text: str) -> set[str]:

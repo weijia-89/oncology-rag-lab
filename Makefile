@@ -63,10 +63,12 @@ eval-mock:
 
 ragas-eval-mock:
 	# Ragas-style RAG metrics report (lexical proxies under MOCK_LLM=1).
+	# In-memory bag-of-words retrieval proxy — not persisted nomic-embed-text index.
 	MOCK_LLM=1 uv run python scripts/ragas_eval.py --output reports/eval_report.json
 
 ragas-eval:
 	# Live DeepEval RAG metrics + report (requires `ollama serve`).
+	# In-memory bag-of-words retrieval proxy — not persisted nomic-embed-text index.
 	@echo "Running RAG eval — needs Ollama for LLM-as-judge metrics."
 	uv run python scripts/ragas_eval.py --output reports/eval_report.json
 
