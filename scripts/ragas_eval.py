@@ -75,7 +75,7 @@ def main() -> int:
         "--baseline",
         type=Path,
         default=_REPO_ROOT / "reports" / "ragas_baseline.json",
-        help="Optional baseline report for regression pass_rate",
+        help="Baseline report for regression pass_rate (placeholder until first seed)",
     )
     args = parser.parse_args()
 
@@ -88,7 +88,7 @@ def main() -> int:
         _REPO_ROOT,
         eval_index=index,
         output_path=args.output,
-        baseline_path=args.baseline if args.baseline.exists() else None,
+        baseline_path=args.baseline,
         settings=settings,
     )
     print(f"wrote {args.output} pass_rate={report['pass_rate']:.3f}")

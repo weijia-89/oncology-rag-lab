@@ -101,17 +101,16 @@ def load_rag_eval_cases(repo_root: Path) -> list[RagEvalCase]:
     return cases
 
 
-def _lexical_scores(case: RagEvalCase, actual: str, contexts: list[str]) -> dict[str, float]:
-    joined_context = " ".join(contexts)
+def _lexical_scores(case: RagEvalCase, actual: str, contexts: list[str]) -> dict[str, float | None]:
     return {
-        "faithfulness": _overlap_ratio(actual, joined_context),
+        "faithfulness": None,  # mock: requires LLM judge; lexical proxy not reported
         "answer_relevancy": _overlap_ratio(actual, case.expected),
         "context_precision": (
             sum(1 for ctx in contexts if _overlap_ratio(case.question, ctx) > 0) / len(contexts)
             if contexts
             else 0.0
         ),
-        "context_recall": _overlap_ratio(case.expected, joined_context),
+        "context_recall": None,  # mock: short gold strings often absent verbatim in chunks
     }
 
 
@@ -121,16 +120,17 @@ def _live_deepeval_scores(
     contexts: list[str],
     settings: Settings,
 ) -> dict[str, float | None]:
-    pytest_import = __import__("pytest")
-    pytest_import.importorskip("deepeval")
-    from deepeval.metrics import (  # noqa: PLC0415
-        AnswerRelevancyMetric,
-        ContextualPrecisionMetric,
-        ContextualRecallMetric,
-        FaithfulnessMetric,
-    )
-    from deepeval.models.llms.ollama_model import OllamaModel  # noqa: PLC0415
-    from deepeval.test_case import LLMTestCase  # noqa: PLC0415
+    try:
+        from deepeval.metrics import (  # noqa: PLC0415
+            AnswerRelevancyMetric,
+            ContextualPrecisionMetric,
+            ContextualRecallMetric,
+            FaithfulnessMetric,
+        )
+        from deepeval.models.llms.ollama_model import OllamaModel  # noqa: PLC0415
+        from deepeval.test_case import LLMTestCase  # noqa: PLC0415
+    except ImportError as exc:
+        raise RuntimeError("deepeval is required for live RAG eval") from exc
 
     judge = OllamaModel(model=settings.llm_model, base_url=settings.ollama_host)
     test_case = LLMTestCase(
@@ -161,22 +161,16 @@ def _live_deepeval_scores(
 
 
 def _case_passes(scores: dict[str, float | None], mock_mode: bool) -> tuple[bool, str | None, str]:
-    if mock_mode:
-        # Lexical proxy: answer relevancy only (context recall is unreliable for
-        # short controlled-vocab gold strings that may not appear verbatim in chunks).
-        relevancy = scores.get("answer_relevancy") or 0.0
-        if relevancy >= RAG_METRIC_THRESHOLDS["answer_relevancy"]:
-            return True, None, "mock lexical answer-relevancy pass"
-        return False, "lexical_threshold", "mock lexical answer-relevancy below threshold"
-
     failures = [
         name
         for name, threshold in RAG_METRIC_THRESHOLDS.items()
         if scores.get(name) is not None and scores[name] < threshold
     ]
     if failures:
-        return False, "rag_metric", f"below threshold: {', '.join(failures)}"
-    return True, None, "all rag metrics at or above threshold"
+        mode = "mock lexical" if mock_mode else "rag metric"
+        kind = "lexical_threshold" if mock_mode else "rag_metric"
+        return False, kind, f"{mode} below threshold: {', '.join(failures)}"
+    return True, None, "mock lexical pass" if mock_mode else "all rag metrics at or above threshold"
 
 
 def evaluate_case(
@@ -212,27 +206,31 @@ def evaluate_case(
     )
 
 
-def _load_baseline_pass_rate(baseline_path: Path) -> float:
+def _load_baseline_pass_rate(baseline_path: Path) -> float | None:
+    """Return baseline pass_rate, or None when baseline is missing/placeholder."""
     if not baseline_path.exists():
-        return 0.0
+        return None
     import json
 
     data = json.loads(baseline_path.read_text(encoding="utf-8"))
-    if "_comment" in data and data.get("summary", {}).get("total", 0) <= 1:
-        return 0.0
-    return float(data.get("pass_rate", data.get("summary", {}).get("passed", 0)))
+    if "_comment" in data and data.get("cases_total", 0) == 0:
+        return None
+    if "pass_rate" in data:
+        return float(data["pass_rate"])
+    return None
 
 
 def build_report_from_results(
     results: list[CaseResult],
     *,
     settings: Settings,
-    baseline_pass_rate: float,
+    baseline_pass_rate: float | None,
     embedding_model: str | None,
 ) -> dict[str, Any]:
     total = len(results)
     passed = sum(1 for r in results if r.passed)
     pass_rate = passed / total if total else 0.0
+    baseline_rate = baseline_pass_rate if baseline_pass_rate is not None else pass_rate
 
     failed_cases = [
         {
@@ -263,9 +261,13 @@ def build_report_from_results(
         "cases_total": total,
         "cases_passed": passed,
         "pass_rate": pass_rate,
-        "baseline_pass_rate": baseline_pass_rate,
+        "baseline_pass_rate": baseline_rate,
         "regression_threshold": REGRESSION_THRESHOLD,
-        "regression_status": regression_status(pass_rate, baseline_pass_rate),
+        "regression_status": (
+            "pass"
+            if baseline_pass_rate is None
+            else regression_status(pass_rate, baseline_pass_rate)
+        ),
         "failed_cases": failed_cases,
         "rag_metrics": {name: build_rag_metric(metric_avgs[name], name) for name in RAG_METRIC_THRESHOLDS},
         "latency": {"avg_ms": avg_latency, "p95_ms": None},
@@ -303,7 +305,8 @@ def run_rag_eval(
         for case in cases
     ]
 
-    baseline_rate = _load_baseline_pass_rate(baseline_path) if baseline_path else 0.0
+    baseline_path = baseline_path or (repo_root / "reports" / "ragas_baseline.json")
+    baseline_rate = _load_baseline_pass_rate(baseline_path)
     embedding_model = None if mock_mode else settings.embed_model
     report = build_report_from_results(
         results,

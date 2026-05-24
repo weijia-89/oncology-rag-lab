@@ -1,0 +1,6 @@
+{
+  "_comment": "Replaced on first real `make ragas-eval && cp reports/eval_report.json reports/ragas_baseline.json` run. When placeholder, regression_status uses pass_rate only without a misleading baseline floor.",
+  "pass_rate": 0.0,
+  "cases_total": 0,
+  "cases_passed": 0
+}
