@@ -57,6 +57,53 @@ def mock_client(settings):
     return OllamaClient(host=settings.ollama_host, model=settings.llm_model)
 
 
+def load_eval_note_nodes(settings):
+    """Load one TextNode per synthetic note — shared by eval index fixtures."""
+    pytest.importorskip("llama_index", reason="llama_index not installed")
+    pytest.importorskip("chromadb", reason="chromadb not installed")
+
+    from llama_index.core import SimpleDirectoryReader
+    from llama_index.core.schema import TextNode
+
+    note_paths = sorted(settings.notes_dir.glob("*.txt"))
+    if not note_paths:
+        pytest.skip(f"No .txt files found in {settings.notes_dir}")
+
+    documents = SimpleDirectoryReader(
+        input_files=[str(path) for path in note_paths],
+    ).load_data()
+
+    return [
+        TextNode(text=doc.text, metadata=doc.metadata, id_=doc.doc_id)
+        for doc in documents
+    ]
+
+
+def build_in_memory_eval_index(settings, embed_model, *, collection_name: str):
+    """Build an ephemeral Chroma-backed index with a caller-supplied embedder."""
+    pytest.importorskip("llama_index", reason="llama_index not installed")
+    pytest.importorskip("chromadb", reason="chromadb not installed")
+
+    import chromadb
+    from llama_index.core import Settings as LIxSettings
+    from llama_index.core import StorageContext, VectorStoreIndex
+    from llama_index.vector_stores.chroma import ChromaVectorStore
+
+    LIxSettings.embed_model = embed_model
+    nodes = load_eval_note_nodes(settings)
+
+    chroma_client = chromadb.EphemeralClient()
+    collection = chroma_client.get_or_create_collection(name=collection_name)
+    vector_store = ChromaVectorStore(chroma_collection=collection)
+    storage_context = StorageContext.from_defaults(vector_store=vector_store)
+
+    return VectorStoreIndex(
+        nodes,
+        storage_context=storage_context,
+        show_progress=False,
+    )
+
+
 @pytest.fixture(scope="session")
 def eval_index(settings):
     """In-memory Chroma index built from synthetic notes — no Ollama, no disk.
@@ -65,15 +112,7 @@ def eval_index(settings):
     without a prior `make ingest`. Uses a lightweight bag-of-words embedder
     so keyword overlap drives ranking (good enough for the 8-note corpus).
     """
-    pytest.importorskip("llama_index", reason="llama_index not installed")
-    pytest.importorskip("chromadb", reason="chromadb not installed")
-
-    import chromadb
-    from llama_index.core import Settings as LIxSettings
-    from llama_index.core import SimpleDirectoryReader, StorageContext, VectorStoreIndex
     from llama_index.core.embeddings import BaseEmbedding
-    from llama_index.core.schema import TextNode
-    from llama_index.vector_stores.chroma import ChromaVectorStore
 
     class _BagOfWordsEmbedding(BaseEmbedding):
         """Deterministic keyword overlap embedder for CI-friendly retrieval tests."""
@@ -102,28 +141,51 @@ def eval_index(settings):
         async def _aget_query_embedding(self, query: str) -> list[float]:
             return self._vectorize(query)
 
-    LIxSettings.embed_model = _BagOfWordsEmbedding()
+    return build_in_memory_eval_index(
+        settings,
+        _BagOfWordsEmbedding(),
+        collection_name="oncology_notes",
+    )
 
-    documents = SimpleDirectoryReader(
-        input_dir=str(settings.notes_dir),
-        required_exts=[".txt"],
-    ).load_data()
-    if not documents:
-        pytest.skip(f"No .txt files found in {settings.notes_dir}")
 
-    # One node per note keeps retrieval assertions stable for the small corpus.
-    nodes = [
-        TextNode(text=doc.text, metadata=doc.metadata, id_=doc.doc_id)
-        for doc in documents
-    ]
+@pytest.fixture(scope="module")
+def baseline_embedding_index(settings):
+    """MockEmbedding baseline index for retrieval drift A/B eval."""
+    pytest.importorskip("llama_index", reason="llama_index not installed")
+    from llama_index.core.embeddings import MockEmbedding
 
-    chroma_client = chromadb.EphemeralClient()
-    collection = chroma_client.get_or_create_collection(name="oncology_notes")
-    vector_store = ChromaVectorStore(chroma_collection=collection)
-    storage_context = StorageContext.from_defaults(vector_store=vector_store)
+    return build_in_memory_eval_index(
+        settings,
+        MockEmbedding(embed_dim=384),
+        collection_name="embedding_drift_baseline",
+    )
 
-    return VectorStoreIndex(
-        nodes,
-        storage_context=storage_context,
-        show_progress=False,
+
+@pytest.fixture(scope="module")
+def candidate_embedding_index(settings):
+    """Shifted MockEmbedding candidate index for retrieval drift A/B eval."""
+    pytest.importorskip("llama_index", reason="llama_index not installed")
+    from llama_index.core.embeddings import MockEmbedding
+
+    class ShiftedMockEmbedding(MockEmbedding):
+        shift: int = 17
+
+        def _get_text_embedding(self, text: str) -> list[float]:
+            vec = super()._get_text_embedding(text)
+            if not self.shift:
+                return vec
+            n = len(vec)
+            offset = self.shift % n
+            return vec[offset:] + vec[:offset]
+
+        def _get_query_embedding(self, query: str) -> list[float]:
+            return self._get_text_embedding(query)
+
+        async def _aget_query_embedding(self, query: str) -> list[float]:
+            return self._get_query_embedding(query)
+
+    return build_in_memory_eval_index(
+        settings,
+        ShiftedMockEmbedding(embed_dim=384, shift=17),
+        collection_name="embedding_drift_candidate",
     )
