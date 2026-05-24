@@ -4,7 +4,8 @@
 
 ### Added
 
-- **Stress eval JSON report** (`src/onclab/eval_report.py`): corpus scale stress run writes `reports/stress_eval_report.json` with measured latency and pass summary; RAGAS fields deferred to `reports/eval_report.json`.
+- **Stress eval JSON report** (`src/onclab/eval_report.py`): corpus scale stress run writes `reports/stress_eval_report.json` with measured latency and pass summary.
+- **Ragas-style RAG eval layer** (`src/onclab/ragas_eval.py`, `src/onclab/ragas_eval_report.py`, `scripts/ragas_eval.py`, `tests/eval/test_ragas_eval.py`): DeepEval native Faithfulness / Answer Relevancy / Contextual Precision / Contextual Recall metrics (RAGAS* wrappers removed in DeepEval 4.x; raw `ragas` not added — import failure on langchain-community 0.4.x). Writes `reports/eval_report.json` with pass-rate regression metadata, Ollama-null token fields, and scope disclaimer. MOCK_LLM=1 uses deterministic lexical overlap proxies; live runs use Ollama LLM-as-judge. Schema validated in `tests/unit/test_ragas_eval_report_schema.py`. GitHub CI still runs unit tests only (`-m "not eval and not drift"`).
 - **Corpus scale stress eval** (`tests/eval/test_corpus_scale_stress.py`): CI-safe in-memory ingest of 100 templated synthetic notes with retrieval latency/count guards; 500-note file-backed run remains manual (ROADMAP longer-term §Scale stress test).
 - **Embedding retrieval drift eval** (`tests/eval/test_embedding_drift.py`): deterministic in-memory A/B over two `MockEmbedding` configs; asserts top-1 chunk ids diverge on the synthetic corpus (ROADMAP near-term §2).
 - **Edge-case gold eval** (`tests/eval/test_edge_case_gold.py`): parameterizes over `data/gold_standard_edge_cases.csv` (12 patients × extractable entities) with MOCK_LLM oracle keys and the same exact-match / `regimen_histology_geval` split as the base suite (ROADMAP longer-term §1).

@@ -70,7 +70,17 @@ MOCK_LLM=1 uv run pytest tests/eval/test_embedding_drift.py -q
 MOCK_LLM=1 uv run pytest tests/eval/test_corpus_scale_stress.py -q
 ```
 
-On success the harness writes `reports/stress_eval_report.json` (run metadata, per-query latency, pass summary; `rag_metrics` is `"unavailable"` until the RAGAS eval path lands).
+On success the harness writes `reports/stress_eval_report.json` (run metadata, per-query latency, pass summary).
+
+**Ragas-style RAG eval** (`scripts/ragas_eval.py`, `tests/eval/test_ragas_eval.py`): scores retrieval contexts plus extraction answers against gold labels. Retrieval is exercised via `retrieve_only()`; generation still uses the full note text in `extract_entity()` (same split as the rest of the lab — retrieval quality is measured separately from the extractor path). **Retrieval uses an in-memory bag-of-words proxy index, not the persisted `data/chroma_db/` index from `make ingest` (nomic-embed-text); see `embedding_model` in the report.** Metrics use DeepEval's native faithfulness, answer relevancy, and contextual precision/recall (Ragas-equivalent; DeepEval 4.x dropped the `RAGAS*` wrapper names). Writes `reports/eval_report.json` with pass-rate regression metadata, null Ollama token fields, and an explicit non-clinical scope note. **MOCK_LLM=1** scores answer relevancy and context precision via lexical overlap; faithfulness and context recall are `unavailable` until live LLM-judge runs. **Live** (`make ragas-eval`) calls Ollama for all four metrics. Marked `eval` — excluded from GitHub Actions unit CI. Run locally:
+
+```bash
+make ragas-eval-mock   # fast; lexical proxies + schema-valid report
+make ragas-eval        # slow; needs `ollama serve`
+MOCK_LLM=1 uv run pytest tests/eval/test_ragas_eval.py -q
+```
+
+The report is **not** committed (see `.gitignore`). It is an evaluation harness artifact for portfolio QA demos, not a clinical validation claim.
 
 ## Why the testing wrap matters more than the pipeline
 
