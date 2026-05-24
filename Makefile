@@ -105,6 +105,6 @@ check-regression:
 clean:
 	# Remove the vector index, eval outputs, and pytest caches.
 	# Useful before a clean re-run / before committing.
-	rm -rf data/chroma_db eval_results*.json drift_report.csv
+	rm -rf data/chroma_db eval_results*.json drift_report.csv reports/
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name .pytest_cache -exec rm -rf {} + 2>/dev/null || true

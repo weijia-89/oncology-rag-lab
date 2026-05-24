@@ -70,6 +70,8 @@ MOCK_LLM=1 uv run pytest tests/eval/test_embedding_drift.py -q
 MOCK_LLM=1 uv run pytest tests/eval/test_corpus_scale_stress.py -q
 ```
 
+On success the harness writes `reports/stress_eval_report.json` (run metadata, per-query latency, pass summary; `rag_metrics` is `"unavailable"` until the RAGAS eval path lands).
+
 ## Why the testing wrap matters more than the pipeline
 
 The honest answer to "is this a production-ready extractor" is no, and `data/FIDELITY_REVIEW.md` walks through why. I compared the 8 base synthetic notes against 3 real de-identified MTSamples transcriptions and catalogued 12 ways the synthetic corpus diverges from clinical reality, things like the hyper-structured template format that real notes do not share, the absence of comorbidities and hedge language, an ECOG distribution skewed toward 0 and 1, and biomarker results landing at the wrong visit type. The 12 edge-case notes in `data/edge_case_notes/` push past the textbook-clean format the base notes share, but a corpus of 20 synthetic notes still cannot simulate the long tail of real clinical narrative.
