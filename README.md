@@ -64,6 +64,12 @@ make test-unit # MOCK_LLM=1; runs in seconds; CI-friendly
 MOCK_LLM=1 uv run pytest tests/eval/test_embedding_drift.py -q
 ```
 
+**Corpus scale stress:** `tests/eval/test_corpus_scale_stress.py` ingests **100** templated synthetic notes into an in-memory Chroma index (reusing `scripts/seed_data.py` helpers) and runs 12 representative retrieval queries with generous latency/count thresholds — no Ollama, no persisted `data/chroma_db/`, no `make ingest`. A full 500-note file-backed run remains manual via `scripts/seed_data.py --count 500` plus `make ingest`. The test is marked `eval` like other harness tests, so GitHub Actions (unit-only, `-m "not eval and not drift"`) does not run it on PR/push; run it via SDK verify or `make eval-mock`. Run locally:
+
+```bash
+MOCK_LLM=1 uv run pytest tests/eval/test_corpus_scale_stress.py -q
+```
+
 ## Why the testing wrap matters more than the pipeline
 
 The honest answer to "is this a production-ready extractor" is no, and `data/FIDELITY_REVIEW.md` walks through why. I compared the 8 base synthetic notes against 3 real de-identified MTSamples transcriptions and catalogued 12 ways the synthetic corpus diverges from clinical reality, things like the hyper-structured template format that real notes do not share, the absence of comorbidities and hedge language, an ECOG distribution skewed toward 0 and 1, and biomarker results landing at the wrong visit type. The 12 edge-case notes in `data/edge_case_notes/` push past the textbook-clean format the base notes share, but a corpus of 20 synthetic notes still cannot simulate the long tail of real clinical narrative.

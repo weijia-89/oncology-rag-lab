@@ -87,6 +87,18 @@ def render(idx: int, case: dict) -> str:
     )
 
 
+def generate_notes(count: int, *, seed: int = 42) -> list[tuple[str, str]]:
+    """Return ``(filename, text)`` pairs for templated notes — single source for disk + in-memory."""
+    random.seed(seed)
+    notes: list[tuple[str, str]] = []
+    for i in range(count):
+        case = CASES[i % len(CASES)]
+        text = render(i, case)
+        path = f"patient_{100 + i:03d}.txt"
+        notes.append((path, text))
+    return notes
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -98,13 +110,10 @@ def main() -> int:
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
 
-    random.seed(args.seed)
     args.out_dir.mkdir(parents=True, exist_ok=True)
 
-    for i in range(args.count):
-        case = CASES[i % len(CASES)]
-        text = render(i, case)
-        (args.out_dir / f"patient_{100 + i:03d}.txt").write_text(text, encoding="utf-8")
+    for path, text in generate_notes(args.count, seed=args.seed):
+        (args.out_dir / path).write_text(text, encoding="utf-8")
 
     print(f"Generated {args.count} synthetic notes in {args.out_dir}")
     return 0

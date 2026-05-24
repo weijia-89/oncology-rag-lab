@@ -79,7 +79,13 @@ def load_eval_note_nodes(settings):
     ]
 
 
-def build_in_memory_eval_index(settings, embed_model, *, collection_name: str):
+def build_in_memory_eval_index(
+    settings,
+    embed_model,
+    *,
+    collection_name: str,
+    nodes=None,
+):
     """Build an ephemeral Chroma-backed index with a caller-supplied embedder."""
     pytest.importorskip("llama_index", reason="llama_index not installed")
     pytest.importorskip("chromadb", reason="chromadb not installed")
@@ -90,7 +96,8 @@ def build_in_memory_eval_index(settings, embed_model, *, collection_name: str):
     from llama_index.vector_stores.chroma import ChromaVectorStore
 
     LIxSettings.embed_model = embed_model
-    nodes = load_eval_note_nodes(settings)
+    if nodes is None:
+        nodes = load_eval_note_nodes(settings)
 
     chroma_client = chromadb.EphemeralClient()
     collection = chroma_client.get_or_create_collection(name=collection_name)
@@ -102,6 +109,34 @@ def build_in_memory_eval_index(settings, embed_model, *, collection_name: str):
         storage_context=storage_context,
         show_progress=False,
     )
+
+
+def make_templated_note_nodes(repo_root: Path, count: int, *, seed: int = 42):
+    """Build in-memory TextNodes from scripts/seed_data.py templates — no disk writes."""
+    pytest.importorskip("llama_index", reason="llama_index not installed")
+
+    import importlib.util
+
+    from llama_index.core.schema import TextNode
+
+    spec = importlib.util.spec_from_file_location(
+        "seed_data",
+        repo_root / "scripts" / "seed_data.py",
+    )
+    seed_data = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(seed_data)
+
+    # sdk-review F3: reuse seed_data.generate_notes so paths/IDs stay aligned with disk writes
+    nodes: list[TextNode] = []
+    for path, text in seed_data.generate_notes(count, seed=seed):
+        nodes.append(
+            TextNode(
+                text=text,
+                id_=path,
+                metadata={"file_path": path, "file_name": path},
+            )
+        )
+    return nodes
 
 
 @pytest.fixture(scope="session")
@@ -189,3 +224,24 @@ def candidate_embedding_index(settings):
         ShiftedMockEmbedding(embed_dim=384, shift=17),
         collection_name="embedding_drift_candidate",
     )
+
+
+@pytest.fixture
+def build_scale_stress_index(settings):
+    """Factory: build an in-memory index from templated notes (for timing ingest in tests)."""
+
+    def _build(repo_root: Path, count: int = 100, *, seed: int = 42):
+        nodes = make_templated_note_nodes(repo_root, count=count, seed=seed)
+        from llama_index.core.embeddings import MockEmbedding
+
+        # sdk-review F2: assert node count before index build — avoid Chroma private accessors
+        assert len(nodes) == count
+        index = build_in_memory_eval_index(
+            settings,
+            MockEmbedding(embed_dim=384),
+            collection_name="corpus_scale_stress",
+            nodes=nodes,
+        )
+        return index, len(nodes)
+
+    return _build
