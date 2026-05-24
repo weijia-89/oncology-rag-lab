@@ -38,6 +38,8 @@ from onclab.ragas_eval_report import (
 
 _TOKEN_RE = re.compile(r"[a-z0-9]+")
 
+EMBEDDING_MODEL_EVAL_PROXY = "bag-of-words-inmemory-v1"
+
 
 def _tokens(text: str) -> set[str]:
     return set(_TOKEN_RE.findall(text.lower()))
@@ -307,12 +309,11 @@ def run_rag_eval(
 
     baseline_path = baseline_path or (repo_root / "reports" / "ragas_baseline.json")
     baseline_rate = _load_baseline_pass_rate(baseline_path)
-    embedding_model = None if mock_mode else settings.embed_model
     report = build_report_from_results(
         results,
         settings=settings,
         baseline_pass_rate=baseline_rate,
-        embedding_model=embedding_model,
+        embedding_model=EMBEDDING_MODEL_EVAL_PROXY,
     )
     write_report(output_path, report)
     return report

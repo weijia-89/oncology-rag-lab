@@ -30,6 +30,7 @@ def test_rag_eval_writes_valid_report(eval_index, repo_root: Path, settings, moc
     assert report["cases_total"] > 0
     assert report["token_usage"]["prompt_tokens_avg"] is None
     assert report["estimated_cost_usd"] == 0.0
+    assert report["embedding_model"] == "bag-of-words-inmemory-v1"
     assert "Ollama" in report["token_usage"]["note"]
     assert report["scope_note"].startswith("Synthetic notes only")
 
