@@ -11,10 +11,12 @@ import os
 
 import pytest
 
-import test_embedding_drift
-from onclab.embedding_compare import ollama_reachable, run_live_embedding_ab, write_embedding_live_ab_report
-
-DRIFT_QUERIES = test_embedding_drift.DRIFT_QUERIES
+from onclab.embedding_compare import (
+    DRIFT_QUERIES,
+    ollama_reachable,
+    run_live_embedding_ab,
+    write_embedding_live_ab_report,
+)
 
 pytestmark = [pytest.mark.eval, pytest.mark.drift, pytest.mark.live_embedding]
 

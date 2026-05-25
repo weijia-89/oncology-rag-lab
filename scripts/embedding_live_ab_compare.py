@@ -14,8 +14,12 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-from onclab.config import load_settings
-from onclab.embedding_compare import (
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(_REPO_ROOT / "src") not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT / "src"))
+
+from onclab.config import load_settings  # noqa: E402
+from onclab.embedding_compare import (  # noqa: E402
     ollama_reachable,
     run_live_embedding_ab,
     write_embedding_live_ab_report,
@@ -23,7 +27,7 @@ from onclab.embedding_compare import (
 
 
 def main() -> int:
-    repo_root = Path(__file__).resolve().parents[1]
+    repo_root = _REPO_ROOT
     settings = load_settings()
 
     if not ollama_reachable(settings.ollama_host):
