@@ -2,12 +2,12 @@
 
 Items are ordered loosely by effort. None are committed beyond what shipped; this is a personal lab.
 
-Last updated: 2026-05-25 (live Ollama embedding A/B SDK).
+Last updated: 2026-05-25 (injection eval corpus expand SDK).
 
 ## Near-term
 
-**Adversarial eval for prompt injection** — *open*  
-`extract.py` notes this gap. Add `tests/eval/test_injection.py` with a small corpus of injection-pattern notes and assert extraction output stays within the closed vocabulary. The 12 edge-case notes in `data/edge_case_notes/` are a starting point; add injection-specific cases alongside them because the existing set targets parsing failures rather than adversarial inputs.
+**Adversarial eval for prompt injection** — *shipped 2026-05-25*  
+`tests/eval/test_injection.py` covers `data/injection_notes/` (instruction override, fake JSON/code fences, role-play system prompts, delimiter escape) with closed-vocabulary assertions and simulated hijack rejection under `MOCK_LLM=1`. Guard lives in `extract.py` (`value_within_closed_vocabulary`).
 
 **Tighter eval assertions for regimen and histology** — *shipped 2026-05-23*  
 [PR #3](https://github.com/weijia-89/oncology-rag-lab/pull/3) merged `regimen_histology_geval` in `src/onclab/eval_metrics.py` and wired it in `tests/eval/test_extraction_eval.py`. Custom GEval rubric replaces generic relevancy fallback for those fields.

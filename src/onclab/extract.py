@@ -64,6 +64,7 @@ ENTITY_TYPES: tuple[str, ...] = (
 # lowercasing so "IGNORE PREVIOUS" in a hijacked model answer is caught.
 FORBIDDEN_VALUE_SUBSTRINGS: tuple[str, ...] = (
     "ignore previous",
+    "disregard",
     "system prompt",
     "you are now",
     "```",
