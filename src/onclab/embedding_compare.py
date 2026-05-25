@@ -33,6 +33,20 @@ DRIFT_QUERIES = (
 
 _CANDIDATE_PREFERENCES = ("mxbai-embed-large", "all-minilm")
 
+REQUIRED_EMBEDDING_LIVE_AB_REPORT_KEYS = frozenset(
+    {
+        "baseline_model",
+        "candidate_model",
+        "queries",
+        "agreement_rate",
+        "queries_compared",
+        "ollama_reachable",
+    }
+)
+REQUIRED_QUERY_ROW_KEYS = frozenset(
+    {"query", "baseline_top_id", "candidate_top_id", "agree"}
+)
+
 
 def top1_node_id(
     index: VectorStoreIndex,
@@ -144,31 +158,8 @@ def pick_live_candidate_embed_model(
         if base != baseline_base and "embed" in base.lower():
             return name, f"fallback embed model {base}"
 
-    for name in available:
-        base = _model_base(name)
-        if base != baseline_base:
-            return name, f"fallback model {base} (preferred embed models unavailable)"
-
-    return None, "no distinct candidate model available on Ollama"
-
-
-def load_synthetic_note_nodes(settings: Settings) -> list[TextNode]:
-    """Load one TextNode per synthetic note under ``settings.notes_dir``."""
-    from llama_index.core import SimpleDirectoryReader
-    from llama_index.core.schema import TextNode
-
-    note_paths = sorted(settings.notes_dir.glob("*.txt"))
-    if not note_paths:
-        raise FileNotFoundError(f"No .txt files found in {settings.notes_dir}")
-
-    documents = SimpleDirectoryReader(
-        input_files=[str(path) for path in note_paths],
-    ).load_data()
-
-    return [
-        TextNode(text=doc.text, metadata=doc.metadata, id_=doc.doc_id)
-        for doc in documents
-    ]
+    # sdk-review F3: do not fall back to chat/LLM tags — OllamaEmbedding needs embed models
+    return None, "no distinct embedding model available on Ollama (pull mxbai-embed-large or all-minilm)"
 
 
 def build_ollama_embedding_index(
@@ -179,29 +170,20 @@ def build_ollama_embedding_index(
     nodes: list[TextNode] | None = None,
 ) -> VectorStoreIndex:
     """Build an ephemeral Chroma-backed index with ``OllamaEmbedding``."""
-    import chromadb
-    from llama_index.core import Settings as LIxSettings
-    from llama_index.core import StorageContext, VectorStoreIndex
     from llama_index.embeddings.ollama import OllamaEmbedding
-    from llama_index.vector_stores.chroma import ChromaVectorStore
+
+    from onclab.eval_embedders import build_in_memory_eval_index
 
     embed_model = OllamaEmbedding(
         model_name=embed_model_name,
         base_url=settings.ollama_host,
     )
-    LIxSettings.embed_model = embed_model
-    if nodes is None:
-        nodes = load_synthetic_note_nodes(settings)
-
-    chroma_client = chromadb.EphemeralClient()
-    collection = chroma_client.get_or_create_collection(name=collection_name)
-    vector_store = ChromaVectorStore(chroma_collection=collection)
-    storage_context = StorageContext.from_defaults(vector_store=vector_store)
-
-    return VectorStoreIndex(
-        nodes,
-        storage_context=storage_context,
-        show_progress=False,
+    # sdk-review F1: reuse eval harness index builder so mock/live eval cannot drift
+    return build_in_memory_eval_index(
+        settings,
+        embed_model,
+        collection_name=collection_name,
+        nodes=nodes,
     )
 
 
@@ -238,6 +220,43 @@ def default_embedding_live_ab_report_path(repo_root: Path) -> Path:
     return repo_root / EMBEDDING_LIVE_AB_REPORT_REL_PATH
 
 
+def validate_embedding_live_ab_report(report: dict[str, Any]) -> list[str]:
+    """Return a list of schema violations (empty == valid)."""
+    errors: list[str] = []
+
+    missing = REQUIRED_EMBEDDING_LIVE_AB_REPORT_KEYS - report.keys()
+    if missing:
+        errors.append(f"missing top-level keys: {sorted(missing)}")
+
+    agreement_rate_value = report.get("agreement_rate")
+    if not isinstance(agreement_rate_value, (int, float)):
+        errors.append("agreement_rate must be a number")
+    elif not 0.0 <= float(agreement_rate_value) <= 1.0:
+        errors.append(f"agreement_rate out of range: {agreement_rate_value!r}")
+
+    queries_compared = report.get("queries_compared")
+    if not isinstance(queries_compared, int) or queries_compared < 0:
+        errors.append("queries_compared must be a non-negative integer")
+
+    queries = report.get("queries")
+    if not isinstance(queries, list):
+        errors.append("queries must be a list")
+    else:
+        for idx, row in enumerate(queries):
+            if not isinstance(row, dict):
+                errors.append(f"queries[{idx}] must be an object")
+                continue
+            missing_row = REQUIRED_QUERY_ROW_KEYS - row.keys()
+            if missing_row:
+                errors.append(f"queries[{idx}] missing keys: {sorted(missing_row)}")
+
+    ollama_flag = report.get("ollama_reachable")
+    if not isinstance(ollama_flag, bool):
+        errors.append("ollama_reachable must be a boolean")
+
+    return errors
+
+
 def write_embedding_live_ab_report(
     repo_root: Path,
     payload: dict[str, Any],
@@ -245,6 +264,11 @@ def write_embedding_live_ab_report(
     path: Path | None = None,
 ) -> Path:
     """Write live embedding A/B JSON under ``reports/``."""
+    errors = validate_embedding_live_ab_report(payload)
+    if errors:
+        joined = "; ".join(errors)
+        raise ValueError(f"invalid embedding live A/B report schema: {joined}")
+
     out = path or default_embedding_live_ab_report_path(repo_root)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
@@ -275,7 +299,10 @@ def run_live_embedding_ab(
         )
 
     if nodes is None:
-        nodes = load_synthetic_note_nodes(settings)
+        from onclab.eval_embedders import load_eval_note_nodes
+
+        # sdk-review F1: shared loader with mock/ragas eval harnesses
+        nodes = load_eval_note_nodes(settings)
 
     baseline_index = build_ollama_embedding_index(
         settings,

@@ -64,7 +64,7 @@ make test-unit # MOCK_LLM=1; runs in seconds; CI-friendly
 MOCK_LLM=1 uv run pytest tests/eval/test_embedding_drift.py -q
 ```
 
-**Live embedding A/B (Ollama):** `tests/eval/test_live_embedding_ab.py` and `scripts/embedding_live_ab_compare.py` run the same top-1 compare shape with real `OllamaEmbedding` models (baseline `ONCLAB_EMBED_MODEL`, default `nomic-embed-text`; candidate prefers `mxbai-embed-large` when pulled). Skipped in CI unless you opt in. Requires `ollama serve` and a second embed model on the host:
+**Live embedding A/B (Ollama):** `tests/eval/test_live_embedding_ab.py` and `scripts/embedding_live_ab_compare.py` run the same top-1 compare shape with real `OllamaEmbedding` models (baseline `ONCLAB_EMBED_MODEL`, default `nomic-embed-text`; candidate prefers `mxbai-embed-large` when pulled). Skipped in CI unless you opt in. Requires `ollama serve` and **two pulled embedding models** on the host (chat/LLM tags such as `qwen3:14b` are not used as candidates):
 
 ```bash
 export ONCLAB_RUN_LIVE_EMBEDDING_AB=1
