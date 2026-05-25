@@ -9,6 +9,8 @@ Two layers:
     default `unknown` response — verifies notes load and parse, not guard logic.
   - Simulated hijack (`test_injection_guard_rejects_simulated_model_compliance`):
     patches `generate` with attack-shaped JSON; load-bearing guard coverage.
+  - Optional live Ollama (`tests/eval/test_live_injection.py`): set
+    `ONCLAB_RUN_LIVE_INJECTION=1` and run `-m live_injection`.
 """
 
 from __future__ import annotations

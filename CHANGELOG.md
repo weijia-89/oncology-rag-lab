@@ -5,6 +5,7 @@
 ### Added
 
 - **Injection eval corpus expanded** (`data/injection_notes/INJ-005`–`INJ-008`): impression-block override, markdown JSON fence, embedded system prompt, delimiter escape; explicit parametrization and simulated hijack cases in `tests/eval/test_injection.py` (ROADMAP near-term §1).
+- **Live Ollama injection smoke** (`tests/eval/test_live_injection.py`): operator-only closed-vocabulary check on INJ-001/INJ-008 when `ONCLAB_RUN_LIVE_INJECTION=1` and Ollama is up.
 - **Live Ollama embedding A/B** (`src/onclab/embedding_compare.py`, `tests/eval/test_live_embedding_ab.py`, `scripts/embedding_live_ab_compare.py`): in-memory top-1 chunk id compare between two Ollama embedders; writes `reports/embedding_live_ab_report.json` when `ollama serve` is up (`ONCLAB_RUN_LIVE_EMBEDDING_AB=1` for pytest).
 - **Embedding compare helpers** (`src/onclab/embedding_compare.py`): shared `top1_node_id`, `compare_retrieval_top1`, and `agreement_rate` for mock and live retrieval drift evals.
 - **Stress eval JSON report** (`src/onclab/eval_report.py`): corpus scale stress run writes `reports/stress_eval_report.json` with measured latency and pass summary.

@@ -33,7 +33,7 @@ This is a local developer tool. It has no inbound network surface and no server 
 
 ### Prompt injection note
 
-`extract.py` concatenates note text into prompts with structural delimiters (`--- CLINICAL NOTE ---` / `--- END NOTE ---`) but doesn't sanitize note content. Output is validated with `value_within_closed_vocabulary` (forbidden substrings such as `ignore previous`, length bounds) and hijacked answers fall back to `unknown`. Adversarial coverage lives in `tests/eval/test_injection.py` over synthetic `data/injection_notes/` (simulated model compliance cases). Input sanitization and ontology-level schema enforcement remain future production hardening.
+`extract.py` concatenates note text into prompts with structural delimiters (`--- CLINICAL NOTE ---` / `--- END NOTE ---`) but doesn't sanitize note content. Output is validated with `value_within_closed_vocabulary` (forbidden substrings such as `ignore previous`, `disregard`, `system prompt`, length bounds) and hijacked answers fall back to `unknown`. Adversarial coverage lives in `tests/eval/test_injection.py` over synthetic `data/injection_notes/` (simulated model compliance cases). Optional operator-only live checks: `ONCLAB_RUN_LIVE_INJECTION=1 uv run pytest tests/eval/test_live_injection.py -m live_injection` (requires Ollama). Input sanitization and ontology-level schema enforcement remain future production hardening.
 
 ---
 
