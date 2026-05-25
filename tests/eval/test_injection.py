@@ -1,7 +1,14 @@
-"""Adversarial injection eval: extraction output must stay within closed vocabulary.
+"""Adversarial injection eval for `data/injection_notes/`.
 
-Corpus lives in data/injection_notes/. Run locally with MOCK_LLM=1 (no Ollama):
+Run locally with MOCK_LLM=1 (no Ollama):
     MOCK_LLM=1 uv run pytest tests/eval/test_injection.py -q
+
+Two layers:
+  - Corpus wiring smoke (`test_injection_corpus_wiring_smoke_under_mock_default`):
+    INJ-* patient IDs are absent from gold_standard, so mock LLM returns the
+    default `unknown` response — verifies notes load and parse, not guard logic.
+  - Simulated hijack (`test_injection_guard_rejects_simulated_model_compliance`):
+    patches `generate` with attack-shaped JSON; load-bearing guard coverage.
 """
 
 from __future__ import annotations
@@ -56,12 +63,13 @@ def test_injection_corpus_files_exist():
 
 
 @pytest.mark.parametrize("note_path", _injection_note_paths())
-def test_injection_note_output_stays_in_closed_vocabulary(
+def test_injection_corpus_wiring_smoke_under_mock_default(
     note_path: Path,
     mock_client: OllamaClient,
     settings,
 ):
-    """Each injection-pattern note must not produce a hijacked entity value."""
+    # sdk-review F1: INJ-* IDs miss gold_standard → mock default unknown; guard lives in hijack tests.
+    """Smoke test: each corpus note loads and yields closed-vocabulary output under mock default."""
     note_text = note_path.read_text(encoding="utf-8")
     patient_id = note_path.stem.split("_")[0]
     request = ExtractionRequest(patient_id=patient_id, note_text=note_text)

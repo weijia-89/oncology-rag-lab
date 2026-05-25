@@ -33,7 +33,7 @@ This is a local developer tool. It has no inbound network surface and no server 
 
 ### Prompt injection note
 
-`extract.py` concatenates note text into prompts with structural delimiters (`--- CLINICAL NOTE ---` / `--- END NOTE ---`) but doesn't sanitize the content. All committed notes in `data/synthetic_notes/` and `data/edge_case_notes/` are invented and safe. The file-path comment in `extract.py` describes what a production hardening pass would add: input sanitization, closed-vocabulary output validation, and adversarial test cases in the eval suite. Those aren't present yet.
+`extract.py` concatenates note text into prompts with structural delimiters (`--- CLINICAL NOTE ---` / `--- END NOTE ---`) but doesn't sanitize note content. Output is validated with `value_within_closed_vocabulary` (forbidden substrings such as `ignore previous`, length bounds) and hijacked answers fall back to `unknown`. Adversarial coverage lives in `tests/eval/test_injection.py` over synthetic `data/injection_notes/` (simulated model compliance cases). Input sanitization and ontology-level schema enforcement remain future production hardening.
 
 ---
 
@@ -43,6 +43,7 @@ This is a local developer tool. It has no inbound network surface and no server 
 |---|---|
 | `data/synthetic_notes/` | Entirely fictional. No real patient names, dates, providers, or identifiers. |
 | `data/edge_case_notes/` | Also fictional. Constructed to exercise specific parsing failure modes. |
+| `data/injection_notes/` | Synthetic adversarial injection-pattern notes for eval only. No PHI. |
 | `data/gold_standard.csv` | Labels for synthetic notes. No PHI. |
 | `data/real_notes/` | **Listed in `.gitignore`.** This directory is never committed. Any files placed there by a developer stay local only. |
 | `data/chroma_db/` | Generated index derived from synthetic notes. Git-ignored. |
