@@ -58,11 +58,21 @@ For unit tests with no Ollama dependency:
 make test-unit # MOCK_LLM=1; runs in seconds; CI-friendly
 ```
 
-**Eval / drift:** `scripts/drift_compare.py` measures **generation drift** (entity values when the LLM model changes). `tests/eval/test_embedding_drift.py` measures **retrieval drift** (top-1 chunk ids when the embedder changes) using two deterministic in-memory indexes over the same 8 synthetic notes — no Ollama ingest, no persisted Chroma. Run it with:
+**Eval / drift:** `scripts/drift_compare.py` measures **generation drift** (entity values when the LLM model changes). **Mock retrieval drift (CI):** `tests/eval/test_embedding_drift.py` compares top-1 chunk ids between two deterministic in-memory `MockEmbedding` indexes over the same 8 synthetic notes — no Ollama, no persisted Chroma. Run it with:
 
 ```bash
 MOCK_LLM=1 uv run pytest tests/eval/test_embedding_drift.py -q
 ```
+
+**Live embedding A/B (Ollama):** `tests/eval/test_live_embedding_ab.py` and `scripts/embedding_live_ab_compare.py` run the same top-1 compare shape with real `OllamaEmbedding` models (baseline `ONCLAB_EMBED_MODEL`, default `nomic-embed-text`; candidate prefers `mxbai-embed-large` when pulled). Skipped in CI unless you opt in. Requires `ollama serve` and a second embed model on the host:
+
+```bash
+export ONCLAB_RUN_LIVE_EMBEDDING_AB=1
+ONCLAB_RUN_LIVE_EMBEDDING_AB=1 uv run pytest tests/eval/test_live_embedding_ab.py -q -m live_embedding
+python3 scripts/embedding_live_ab_compare.py   # writes reports/embedding_live_ab_report.json
+```
+
+Shared helpers live in `src/onclab/embedding_compare.py`. HuggingFace BGE-M3 remains an optional follow-on (see ROADMAP) — not required for the Ollama-only path.
 
 **Corpus scale stress:** `tests/eval/test_corpus_scale_stress.py` ingests **100** templated synthetic notes into an in-memory Chroma index (reusing `scripts/seed_data.py` helpers) and runs 12 representative retrieval queries with generous latency/count thresholds — no Ollama, no persisted `data/chroma_db/`, no `make ingest`. A full 500-note file-backed run remains manual via `scripts/seed_data.py --count 500` plus `make ingest`. The test is marked `eval` like other harness tests, so GitHub Actions (unit-only, `-m "not eval and not drift"`) does not run it on PR/push; run it via SDK verify or `make eval-mock`. Run locally:
 

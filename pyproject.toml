@@ -88,6 +88,7 @@ testpaths = ["tests"]
 markers = [
     "eval: LLM evaluation tests (require Ollama running unless MOCK_LLM=1)",
     "drift: cross-version drift comparison (slow)",
+    "live_embedding: live Ollama embedding A/B (requires ONCLAB_RUN_LIVE_EMBEDDING_AB=1)",
 ]
 
 [tool.ruff]
