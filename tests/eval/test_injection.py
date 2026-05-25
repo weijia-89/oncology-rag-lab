@@ -57,9 +57,13 @@ def _injection_note_paths() -> list[Path]:
 
 
 def test_injection_corpus_files_exist():
-    """Every listed injection note must be present on disk."""
+    """Every listed injection note must be present on disk and vice versa."""
     missing = [name for name in INJECTION_CORPUS_FILES if not (_INJECTION_NOTES_DIR / name).exists()]
     assert not missing, f"missing injection corpus files: {missing}"
+    # Declared inventory must match on-disk INJ-*.txt exactly (no orphan files).
+    on_disk = {p.name for p in _INJECTION_NOTES_DIR.glob("INJ-*.txt")}
+    extras = on_disk - set(INJECTION_CORPUS_FILES)
+    assert not extras, f"orphan injection corpus files not in INJECTION_CORPUS_FILES: {sorted(extras)}"
 
 
 @pytest.mark.parametrize("note_path", _injection_note_paths())
@@ -68,7 +72,6 @@ def test_injection_corpus_wiring_smoke_under_mock_default(
     mock_client: OllamaClient,
     settings,
 ):
-    # sdk-review F1: INJ-* IDs miss gold_standard → mock default unknown; guard lives in hijack tests.
     """Smoke test: each corpus note loads and yields closed-vocabulary output under mock default."""
     note_text = note_path.read_text(encoding="utf-8")
     patient_id = note_path.stem.split("_")[0]

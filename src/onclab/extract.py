@@ -37,8 +37,6 @@ Two patterns to know:
     still need input sanitization and stronger schema enforcement.
 """
 
-# sdk-review F2: module doc now references shipped guard + tests/eval/test_injection.py.
-
 from __future__ import annotations
 
 import json
