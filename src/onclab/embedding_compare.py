@@ -140,10 +140,12 @@ def pick_live_candidate_embed_model(
     baseline_model: str,
     ollama_host: str,
 ) -> tuple[str | None, str]:
+    # sdk-review F1: docstring must match body — no chat/LLM candidate fallback
     """Pick a second Ollama embed model for live A/B.
 
     Prefers ``mxbai-embed-large``, then ``all-minilm``, then any distinct embed
-    model, then any distinct pulled model. Returns ``(model_name, selection_note)``.
+    model. Returns ``(model_name, selection_note)`` or ``(None, note)`` when no
+    distinct embedding model is available (chat/LLM tags are not candidates).
     """
     available = list_ollama_model_names(ollama_host)
     baseline_base = _model_base(baseline_model)
