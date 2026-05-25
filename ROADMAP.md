@@ -2,7 +2,7 @@
 
 Items are ordered loosely by effort. None are committed beyond what shipped; this is a personal lab.
 
-Last updated: 2026-05-24 (embedding drift eval SDK).
+Last updated: 2026-05-25 (live Ollama embedding A/B SDK).
 
 ## Near-term
 
@@ -19,7 +19,10 @@ Last updated: 2026-05-24 (embedding drift eval SDK).
 `tests/conftest.py` `eval_index` fixture backs retrieval eval without persisted `data/chroma_db/`. Do **not** add a duplicate `oncology_chroma_ci` script; CI runs the fixture path.
 
 **Second embedding model A/B** — *shipped 2026-05-24*  
-`tests/eval/test_embedding_drift.py` runs deterministic in-memory top-1 chunk id A/B between two `MockEmbedding` configs on the synthetic corpus (no Ollama/HF). Follow-on: swap live `OllamaEmbedding` vs `HuggingFaceEmbedding` (BGE-M3) using the same compare helper shape.
+`tests/eval/test_embedding_drift.py` runs deterministic in-memory top-1 chunk id A/B between two `MockEmbedding` configs on the synthetic corpus (no Ollama/HF).
+
+**Live Ollama embedding A/B** — *shipped 2026-05-25*  
+`tests/eval/test_live_embedding_ab.py` and `scripts/embedding_live_ab_compare.py` reuse `src/onclab/embedding_compare.py` with real `OllamaEmbedding` models over in-memory Chroma (`ONCLAB_RUN_LIVE_EMBEDDING_AB=1`). Optional next human job: HuggingFace `HuggingFaceEmbedding` (BGE-M3) third arm — defer unless HF deps stay lightweight and tests skip without HF installed.
 
 ## Longer-term
 
