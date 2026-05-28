@@ -17,6 +17,12 @@
 
 - **Regimen/histology GEval rubric** (`src/onclab/eval_metrics.py`): shared `regimen_histology_geval` with clinical-plausibility criteria (abbreviation aliases, line-of-therapy equivalence, wrong-class rejection); wired in `tests/eval/test_extraction_eval.py` and `tests/unit/test_eval_metrics.py` (ROADMAP near-term §2).
 
+## 2026-05-28
+
+### Added
+
+- **Structured LLM extract payload** ([#12](https://github.com/weijia-89/oncology-rag-lab/pull/12)): `LlmExtractPayload` Pydantic model validates JSON from Ollama before entity mapping; tighter parse failures in `extract.py` with unit tests in `test_extract_parse.py`.
+
 ## [0.1.4] - 2026-05-15
 
 ### Changed
