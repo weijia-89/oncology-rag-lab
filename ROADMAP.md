@@ -2,7 +2,7 @@
 
 Items are ordered loosely by effort. None are committed beyond what shipped; this is a personal lab.
 
-Last updated: 2026-05-25 (injection eval corpus expand SDK).
+Last updated: 2026-05-28.
 
 ## Near-term
 
@@ -32,5 +32,5 @@ Last updated: 2026-05-25 (injection eval corpus expand SDK).
 **Scale stress test** — *partial (2026-05-24)*  
 CI-safe harness: `tests/eval/test_corpus_scale_stress.py` ingests 100 templated notes into in-memory Chroma (no Ollama, no persisted `data/chroma_db/`). Full 500-note file-backed run via `scripts/seed_data.py --count 500` + `make ingest` remains manual to surface ChromaDB disk limits before production scale.
 
-**Structured output via function-calling** — *open*  
-`extract.py` uses regex JSON fallback when Ollama `format='json'` is model-dependent. Qwen3 function-calling would make `rationale` part of the native output contract and remove parse-failure noise.
+**Structured output via function-calling** — *partial (2026-05-28)*  
+[#12](https://github.com/weijia-89/oncology-rag-lab/pull/12) adds `LlmExtractPayload` Pydantic validation on LLM JSON blobs before entity mapping. Native Qwen3 function-calling / `format='json'` hardening remains open.
