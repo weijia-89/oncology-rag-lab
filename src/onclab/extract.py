@@ -44,7 +44,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator
 
 from .config import Settings
 from .llm_client import OllamaClient
@@ -85,6 +85,39 @@ def value_within_closed_vocabulary(value: str) -> bool:
 # ---------------------------------------------------------------------------
 # Output schema
 # ---------------------------------------------------------------------------
+class LlmExtractPayload(BaseModel):
+    """Strict contract for the JSON object the LLM must emit per entity."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    value: str = Field(..., description="Extracted value or 'unknown'")
+    confidence: float = Field(0.0, ge=0.0, le=1.0)
+    rationale: str = ""
+
+    @field_validator("value", mode="before")
+    @classmethod
+    def _coerce_value(cls, v: object) -> str:
+        if v is None:
+            return "unknown"
+        return str(v).strip() or "unknown"
+
+    @field_validator("rationale", mode="before")
+    @classmethod
+    def _coerce_rationale(cls, v: object) -> str:
+        if v is None:
+            return ""
+        return str(v).strip()
+
+    @field_validator("confidence", mode="before")
+    @classmethod
+    def _clamp_confidence(cls, v: object) -> float:
+        try:
+            numeric = float(v)  # type: ignore[arg-type]
+        except (TypeError, ValueError) as exc:
+            raise ValueError("confidence must be numeric") from exc
+        return max(0.0, min(1.0, numeric))
+
+
 class ExtractedEntity(BaseModel):
     """One extracted (entity_type, value, confidence) tuple.
 
@@ -208,16 +241,15 @@ def _parse_response(raw: str) -> ExtractedEntity | None:
     if blob is None:
         return None
     try:
-        payload = json.loads(blob)
-        confidence = max(0.0, min(1.0, float(payload.get("confidence", 0.0))))
-        return ExtractedEntity(
-            entity_type="",  # filled in by caller; the model isn't asked for this
-            value=str(payload.get("value", "unknown")).strip(),
-            confidence=confidence,
-            rationale=str(payload.get("rationale", "")).strip(),
-        )
-    except (json.JSONDecodeError, ValueError, TypeError, ValidationError):
+        parsed_payload = LlmExtractPayload.model_validate(json.loads(blob))
+    except (json.JSONDecodeError, ValidationError, ValueError, TypeError):
         return None
+    return ExtractedEntity(
+        entity_type="",  # filled in by caller; the model isn't asked for this
+        value=parsed_payload.value,
+        confidence=parsed_payload.confidence,
+        rationale=parsed_payload.rationale,
+    )
 
 
 def extract_entity(
