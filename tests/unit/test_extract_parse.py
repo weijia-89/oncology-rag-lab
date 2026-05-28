@@ -82,3 +82,19 @@ def test_parse_rejects_non_numeric_confidence():
     a fake 0.0 that downstream code might trust."""
     raw = '{"value": "IIIA", "confidence": "high", "rationale": "string instead of number"}'
     assert _parse_response(raw) is None
+
+
+def test_parse_ignores_extra_llm_keys():
+    """Structured payload model drops unknown keys instead of trusting them."""
+    raw = (
+        '{"value": "adenocarcinoma", "confidence": 0.9, "rationale": "biopsy", '
+        '"entity_type": "cancer_type", "hallucinated_field": true}'
+    )
+    parsed = _parse_response(raw)
+    assert parsed is not None
+    assert parsed.value == "adenocarcinoma"
+
+
+def test_parse_rejects_missing_value():
+    raw = '{"confidence": 0.5, "rationale": "no value key"}'
+    assert _parse_response(raw) is None
